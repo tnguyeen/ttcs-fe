@@ -1,0 +1,51 @@
+.wrapper {
+  height: 80px;
+  width: 100%;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  .header {
+    width: 1152px;
+    height: 100%;
+    display: flex;
+    .logoWrapper {
+      width: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .navbar {
+      flex: auto;
+      display: flex;
+      align-items: center;
+      margin: 0 40px;
+    }
+    .loginHeaderWrapper {
+      width: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+.loginWrapper {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.514);
+  h1 {
+    position: absolute;
+    top: 50px;
+    right: 50px;
+    cursor: pointer;
+    color: white;
+  }
+}

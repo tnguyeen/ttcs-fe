@@ -1,6 +1,7 @@
 import { useRef, useState } from "react"
 import styles from "./LoginBox.module.scss"
 import Link from "next/link"
+import Button, { ButtonStyle, ButtonType } from "../Button/Button"
 
 export default function LoginBox() {
   const [usernameValue, setUsernameValue] = useState<string>("")
@@ -19,6 +20,8 @@ export default function LoginBox() {
     fd.append("username", usernameValue)
     fd.append("password", passwordValue)
   }
+
+  const loginGoogle = () => {}
 
   return (
     <div className={styles.wrapper}>
@@ -58,12 +61,13 @@ export default function LoginBox() {
               pattern="[A-Za-z0-9]+"
             />
           </div>
-
-          <button type="submit" className={styles.loginBtn}>
-            Log in
-          </button>
+          <Button
+            type={ButtonType.submit}
+            btnStyle={ButtonStyle.primary}
+            content="Log in"
+          />
         </form>
-        <div>
+        <div style={{ marginTop: 10 }}>
           Dont have an account
           <Link href="/register" style={{ marginLeft: 4, cursor: "pointer" }}>
             <strong>Register</strong>
@@ -71,6 +75,9 @@ export default function LoginBox() {
         </div>
         <div className={styles.social}></div>
       </div>
+      <span style={{ cursor: "pointer" }} onClick={loginGoogle}>
+        Or continue with Google
+      </span>
     </div>
   )
 }

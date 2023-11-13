@@ -4,7 +4,8 @@ import styles from "./Register.module.scss"
 import Router from "next/router"
 import { useRef, useState } from "react"
 import Link from "next/link"
-import LoginBox from "@/components/LoginBox/page"
+import LoginBox from "@/components/LoginBox/LoginBox"
+import Button, { ButtonStyle, ButtonType } from "@/components/Button/Button"
 
 export default function Register() {
   const [login, setLogin] = useState<Boolean>(false)
@@ -14,11 +15,13 @@ export default function Register() {
   const [emailValue, setEmailValue] = useState<string>("")
   const [passwordValue, setPasswordValue] = useState<string>("")
   const [cfmPassValue, setCfmPassValue] = useState<string>("")
+  const [profilePic, setProfilePic] = useState<any>()
   const inputFullname = useRef<HTMLInputElement>(null)
   const inputUsername = useRef<HTMLInputElement>(null)
   const inputEmail = useRef<HTMLInputElement>(null)
   const inputPassword = useRef<HTMLInputElement>(null)
   const inputCfmPass = useRef<HTMLInputElement>(null)
+  const inputPic = useRef<HTMLInputElement>(null)
 
   const changeHandler = () => {
     setFullnameValue(inputFullname.current?.value!)
@@ -26,6 +29,10 @@ export default function Register() {
     setPasswordValue(inputPassword.current?.value!)
     setEmailValue(inputEmail.current?.value!)
     setCfmPassValue(inputCfmPass.current?.value!)
+  }
+  const changePicHandler = () => {
+    changeHandler()
+    setProfilePic(inputPic.current?.files![0])
   }
 
   const showLogin = () => {
@@ -49,6 +56,8 @@ export default function Register() {
     fd.append("email", emailValue)
     fd.append("password", passwordValue)
     fd.append("cfmPass", cfmPassValue)
+    fd.append("profilepic", profilePic)
+    alert("tete")
   }
   return (
     <>
@@ -68,13 +77,16 @@ export default function Register() {
         </div>
         <div className={styles.registerForm}>
           <h2>Please Fill out form to Register!</h2>
-          <form onSubmit={submitForm}>
+          <form
+            onSubmit={submitForm}
+            encType="multipart/form-data"
+            method="POST"
+          >
             <div>
               <label htmlFor="fullname">Full name</label>
               <br />
               <input
                 type="text"
-                name="fullname"
                 id="fullname"
                 ref={inputFullname}
                 onChange={changeHandler}
@@ -90,7 +102,6 @@ export default function Register() {
               <br />
               <input
                 type="text"
-                name="username"
                 id="username"
                 ref={inputUsername}
                 onChange={changeHandler}
@@ -106,7 +117,6 @@ export default function Register() {
               <br />
               <input
                 type="text"
-                name="email"
                 id="email"
                 ref={inputEmail}
                 onChange={changeHandler}
@@ -121,11 +131,10 @@ export default function Register() {
               <br />
               <input
                 type="password"
-                name="password"
                 id="password"
                 ref={inputPassword}
                 onChange={changeHandler}
-                value={usernameValue}
+                value={passwordValue}
                 required
                 minLength={4}
                 maxLength={20}
@@ -137,7 +146,6 @@ export default function Register() {
               <br />
               <input
                 type="password"
-                name="cfmPass"
                 id="cfmPass"
                 ref={inputCfmPass}
                 onChange={changeHandler}
@@ -148,9 +156,31 @@ export default function Register() {
                 pattern="[A-Za-z0-9]+"
               />
             </div>
-            <button type="submit" className={styles.signupBtn}>
-              Register
-            </button>
+            <div>
+              <label
+                className={styles.proPic}
+                htmlFor="role"
+                onClick={() => {
+                  inputPic.current?.click()
+                }}
+              >
+                Choose Profile Picture
+              </label>
+              {profilePic && <span>{profilePic.name}</span>}
+              <br />
+              <input
+                type="file"
+                accept="image/png, image/jpeg"
+                ref={inputPic}
+                onChange={changePicHandler}
+                style={{ display: "none" }}
+              />
+            </div>
+            <Button
+              type={ButtonType.submit}
+              btnStyle={ButtonStyle.primary}
+              content="Register"
+            />
           </form>
           <div>
             Yes I have an account

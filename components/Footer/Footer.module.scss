@@ -1,0 +1,25 @@
+.wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 60px;
+  .footer {
+    width: 1152px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: #158ac7;
+    color: white;
+    border-radius: 24px;
+    ul {
+      li {
+        list-style: none;
+        padding: 2px;
+        margin: 2px;
+      }
+    }
+  }
+}
