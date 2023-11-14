@@ -17,8 +17,8 @@ export default function Pool({ images, name, location }: PoolProps) {
         className={styles.pic}
         src={`https://froakie.io.vn/assets/` + images}
         alt="pic"
-        height={220}
-        width={230}
+        height={290}
+        width={300}
       />
       <span className={styles.name}>{name}</span>
       <span className={styles.location}>{location}</span>

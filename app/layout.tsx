@@ -28,7 +28,7 @@ export default function RootLayout({
           justifyContent: "center",
         }}
       >
-        <div style={{ height: "100%", width: "1152px" }}>{children}</div>
+        <div style={{ height: "100%", width: "1440px" }}>{children}</div>
       </body>
       <Footer />
     </html>

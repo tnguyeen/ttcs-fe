@@ -24,7 +24,7 @@ export default function Home() {
       <div className={styles.wrapper}>
         <SearchPool />
         <div className={styles.poolsSec}>
-          <h2>Pho bien</h2>
+          <h2>Phổ biến</h2>
           <div className={styles.pools}>
             {/* <Pool />
             <Pool />
