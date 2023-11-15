@@ -1,0 +1,25 @@
+.wrapper {
+  height: 390px;
+  width: 100%;
+  max-width: 1440px;
+  border-radius: 40px;
+  background-image: url("./image.png");
+  background-color: #ffffff;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  .main {
+    height: 100%;
+    width: 650px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 40px 180px 180px 40px;
+    background-color: #77adc1;
+    h2 {
+      color: white;
+      margin-bottom: 60px;
+    }
+  }
+}

@@ -3,9 +3,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 60px;
+  margin: 60px 0;
   .footer {
-    width: 1152px;
+    width: 100%;
+    max-width: 1440px;
     height: 100%;
     display: flex;
     align-items: center;

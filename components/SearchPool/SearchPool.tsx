@@ -1,5 +1,7 @@
 "use client"
 import { useRef, useState } from "react"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"
 import styles from "./SearchPool.module.scss"
 
 export default function SearchPool() {
@@ -23,12 +25,15 @@ export default function SearchPool() {
           type="text"
           name="location"
           id="location"
+          placeholder="Search your location"
           ref={inputLocation}
           onChange={changeHandler}
           value={location}
           required
         />
-        <button type="submit">Search</button>
+        <button type="submit">
+          <FontAwesomeIcon icon={faMagnifyingGlass} size="xl" />
+        </button>
       </form>
     </div>
   )

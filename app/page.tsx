@@ -5,6 +5,7 @@ import Pool, { PoolProps } from "@/components/Pool/Pool"
 import styles from "./page.module.scss"
 import { useEffect, useRef, useState } from "react"
 import Axios from "axios"
+import Host from "@/components/Host/Host"
 
 export default function Home() {
   const [pools, setPools] = useState<Array<PoolProps>>([])
@@ -26,24 +27,20 @@ export default function Home() {
         <div className={styles.poolsSec}>
           <h2>Phổ biến</h2>
           <div className={styles.pools}>
-            {/* <Pool />
-            <Pool />
-            <Pool />
-            <Pool /> */}
             {pools.map((e, i) => {
-              console.log(e.images[0].directus_files_id)
-
               return (
                 <Pool
                   key={i}
                   images={e.images[0].directus_files_id}
                   name={e.name}
                   location={e.location}
+                  expand={false}
                 />
               )
             })}
           </div>
         </div>
+        <Host />
       </div>
     </>
   )

@@ -7,15 +7,16 @@
     flex-direction: column;
     width: 100%;
     h2 {
-      margin: 20px 0;
+      margin: 10px 0;
     }
     .pools {
       overflow-x: scroll;
       display: flex;
       scroll-behavior: smooth;
       justify-content: center;
-      height: 480px;
-      padding-top: 40px;
+      // height: 480px;
+      padding: 20px 0;
+      margin: 20px 0;
       &::-webkit-scrollbar {
         display: none;
       }
@@ -28,6 +29,17 @@
         margin: 10px;
         padding: 10px;
         cursor: pointer;
+      }
+    }
+  }
+}
+@media screen and (max-width: 1200px) {
+  .wrapper {
+    .poolsSec {
+      .pools {
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
       }
     }
   }

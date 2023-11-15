@@ -8,7 +8,8 @@
   position: fixed;
   top: 0;
   .header {
-    width: 1440px;
+    width: 100%;
+    max-width: 1440px;
     height: 100%;
     display: flex;
     .logoWrapper {

@@ -23,12 +23,14 @@ export default function RootLayout({
         className={inter.className}
         style={{
           marginTop: 100,
-          height: 2000,
+          // height: 2000,
           display: "flex",
           justifyContent: "center",
         }}
       >
-        <div style={{ height: "100%", width: "1440px" }}>{children}</div>
+        <div style={{ height: "100%", width: "100%", maxWidth: "1440px" }}>
+          {children}
+        </div>
       </body>
       <Footer />
     </html>

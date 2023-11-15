@@ -1,6 +1,7 @@
 .wrapper {
   height: 410px;
   width: 324px;
+  flex: auto;
   margin: 0 14px;
   border-radius: 30px;
   display: flex;
@@ -10,6 +11,7 @@
   position: relative;
   border: 1px solid black;
   padding: 10px 16px;
+  margin-bottom: 20px;
   transition: 0.3s;
   cursor: pointer;
   &:hover {
@@ -17,6 +19,8 @@
   }
   .pic {
     border-radius: 20px;
+    width: 100% !important ;
+    height: 80% !important;
   }
   span {
     width: 100%;
@@ -27,5 +31,47 @@
   }
   .location {
     font-size: 14px;
+  }
+}
+
+.expand {
+  width: 100%;
+  max-width: 860px;
+  height: 210px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  border: 1px solid black;
+  padding: 10px 16px;
+  margin-top: 20px;
+  transition: 0.3s;
+  .pic {
+    border-radius: 10px;
+    // width: 100% !important ;
+    // height: 80% !important;
+  }
+  .details {
+    display: flex;
+    flex-direction: column;
+    flex: auto;
+    justify-content: space-between;
+    height: 100%;
+    padding: 10px 20px;
+    .name {
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 20px;
+    }
+    .description {
+      font-weight: 400;
+      font-size: 14px;
+      color: #5a5959;
+    }
+    .btn {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+    }
   }
 }
