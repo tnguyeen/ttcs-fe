@@ -1,12 +1,14 @@
 .wrapper {
   height: 80px;
   width: 100%;
-  background-color: white;
+  background-color: rgb(255, 255, 255);
   display: flex;
   justify-content: center;
   align-items: center;
   position: fixed;
   top: 0;
+  left: 0;
+  z-index: 100;
   .header {
     width: 100%;
     max-width: 1440px;
@@ -37,7 +39,8 @@
   width: 100vw;
   height: 100vh;
   top: 0;
-  z-index: 3;
+  left: 0;
+  z-index: 101;
   display: flex;
   justify-content: center;
   align-items: center;

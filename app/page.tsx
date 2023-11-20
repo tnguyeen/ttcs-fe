@@ -6,14 +6,13 @@ import styles from "./page.module.scss"
 import { useEffect, useRef, useState } from "react"
 import Axios from "axios"
 import Host from "@/components/Host/Host"
+import api from "@/api"
 
 export default function Home() {
   const [pools, setPools] = useState<Array<PoolProps>>([])
 
   const getPools = () => {
-    Axios.get(
-      "https://froakie.io.vn/items/pool?fields=*,images.*&limit=4&page=1&sort=rating"
-    )
+    Axios.get(`${api}/items/pool?fields=*,images.*&limit=4&page=1&sort=rating`)
       .then((res) => setPools(res.data.data))
       .catch((err) => console.log(err))
   }

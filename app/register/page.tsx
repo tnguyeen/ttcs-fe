@@ -3,7 +3,6 @@ import Head from "next/head"
 import styles from "./Register.module.scss"
 import Router from "next/router"
 import { useRef, useState } from "react"
-import Link from "next/link"
 import LoginBox from "@/components/LoginBox/LoginBox"
 import Button, { ButtonStyle, ButtonType } from "@/components/Button/Button"
 

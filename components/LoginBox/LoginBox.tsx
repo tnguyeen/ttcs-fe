@@ -1,15 +1,20 @@
+"use client"
 import { useRef, useState } from "react"
 import styles from "./LoginBox.module.scss"
 import Link from "next/link"
 import Button, { ButtonStyle, ButtonType } from "../Button/Button"
 import axios from "axios"
 import api from "@/api"
+import { useDispatch } from "react-redux"
+import { setLogin } from "@/state"
 
 export default function LoginBox() {
   const [usernameValue, setUsernameValue] = useState<string>("")
   const [passwordValue, setPasswordValue] = useState<string>("")
   const inputUsername = useRef<HTMLInputElement>(null)
   const inputPassword = useRef<HTMLInputElement>(null)
+
+  const dispatch = useDispatch()
 
   const changeHandler = () => {
     setUsernameValue(inputUsername.current?.value!)
@@ -26,7 +31,17 @@ export default function LoginBox() {
 
     axios
       .post(url, data)
-      .then((res) => console.log(res.data.data))
+      .then((res) => res.data.data)
+      .then((res) => {
+        dispatch(
+          setLogin({
+            user: data.email,
+            token: res.access_token,
+          })
+        )
+        localStorage.setItem("user", data.email)
+        localStorage.setItem("token", res.access_token)
+      })
       .catch((err) => console.log(err))
   }
 
