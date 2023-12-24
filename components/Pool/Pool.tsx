@@ -4,8 +4,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faLocationDot, faStar } from "@fortawesome/free-solid-svg-icons"
 import Pic from "./searchSec.jpg"
 import Button, { ButtonStyle } from "../Button/Button"
+import Link from "next/link"
+import api from "@/api"
 
 export interface PoolProps {
+  id?: number
   images: any
   name: string
   location: string
@@ -15,6 +18,7 @@ export interface PoolProps {
 }
 
 export default function Pool({
+  id,
   images,
   name,
   location,
@@ -27,14 +31,15 @@ export default function Pool({
       <div className={styles.expand}>
         <Image
           className={styles.pic}
-          // src={`https://froakie.io.vn/assets/` + 3}
-          src={Pic}
+          src={`https://froakie.io.vn/assets/` + images}
           alt="pic"
           height={184}
           width={240}
         />
         <div className={styles.details}>
-          <span className={styles.name}>{name}</span>
+          <Link href={`/pools/${id}`} className={styles.name}>
+            {name}
+          </Link>
           <span className={styles.description}>{description}</span>
           <span className={styles.rating}>
             <FontAwesomeIcon
@@ -70,7 +75,9 @@ export default function Pool({
         height={290}
         width={300}
       />
-      <span className={styles.name}>{name}</span>
+      <Link href={`/pools/${id}`} className={styles.name}>
+        {name}
+      </Link>
       <span className={styles.location}>
         <FontAwesomeIcon
           icon={faLocationDot}

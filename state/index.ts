@@ -7,7 +7,7 @@ type UserModel = {
 }
 
 type StateModel = {
-  user: UserModel | null
+  user: string | null
   token: string | null
 }
 

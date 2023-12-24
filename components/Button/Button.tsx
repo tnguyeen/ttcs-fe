@@ -1,4 +1,4 @@
-import { MouseEventHandler } from "react"
+import { MouseEventHandler, useState } from "react"
 import styles from "./Button.module.scss"
 
 export interface ButtonProps {
@@ -6,6 +6,7 @@ export interface ButtonProps {
   btnStyle: ButtonStyle
   content: string
   func?: MouseEventHandler
+  priceForTicket?: number | boolean
 }
 
 export enum ButtonStyle {
@@ -18,14 +19,32 @@ export enum ButtonType {
   submit = "submit",
 }
 
-export default function Button({ type, btnStyle, content, func }: ButtonProps) {
+export default function Button({
+  type,
+  btnStyle,
+  content,
+  func,
+  priceForTicket,
+}: ButtonProps) {
+  const [price, setPrice] = useState<number>(0)
   return (
     <button
       type={type}
-      className={styles.btn + " " + styles[btnStyle]}
+      className={
+        styles.btn +
+        " " +
+        styles[btnStyle] +
+        " " +
+        (priceForTicket ? styles.expand : "")
+      }
       onClick={func}
     >
-      {content}
+      <p>{content}</p>
+      {priceForTicket && <br />}
+      {priceForTicket &&
+        `Tổng tiền: ${
+          typeof priceForTicket == "boolean" ? 0 : priceForTicket
+        } VNĐ`}
     </button>
   )
 }

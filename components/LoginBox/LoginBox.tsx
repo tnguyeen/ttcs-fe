@@ -5,7 +5,7 @@ import Link from "next/link"
 import Button, { ButtonStyle, ButtonType } from "../Button/Button"
 import axios from "axios"
 import api from "@/api"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { setLogin } from "@/state"
 
 export default function LoginBox() {
@@ -13,6 +13,7 @@ export default function LoginBox() {
   const [passwordValue, setPasswordValue] = useState<string>("")
   const inputUsername = useRef<HTMLInputElement>(null)
   const inputPassword = useRef<HTMLInputElement>(null)
+  const userLog = useSelector((state: any) => state.user)
 
   const dispatch = useDispatch()
 
@@ -46,6 +47,10 @@ export default function LoginBox() {
   }
 
   const loginGoogle = () => {}
+
+  if (userLog) {
+    return <div className={styles.wrapper}>{userLog} da dang nhap</div>
+  }
 
   return (
     <div className={styles.wrapper}>

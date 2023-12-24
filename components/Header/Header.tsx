@@ -13,14 +13,24 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 import LoginBox from "../LoginBox/LoginBox"
 import Button, { ButtonType, ButtonStyle } from "../Button/Button"
+import { useDispatch, useSelector } from "react-redux"
+import { setLogout } from "@/state"
 
 export default function Header() {
   const [login, setLogin] = useState<Boolean>(false)
+  const userLog = useSelector((state: any) => state.user)
+
+  const dispatch = useDispatch()
 
   const showLogin = () => {
     setLogin(true)
   }
   const hideLogin = () => {
+    setLogin(false)
+  }
+  function logOut(): void {
+    dispatch(setLogout())
+    localStorage.clear()
     setLogin(false)
   }
   return (
@@ -34,15 +44,23 @@ export default function Header() {
             <Button btnStyle={ButtonStyle.secondary} content="Phổ biến" />
           </div>
           <div className={styles.loginHeaderWrapper}>
-            <Button
-              btnStyle={ButtonStyle.secondary}
-              content="Log in"
-              func={showLogin}
-            />
+            {userLog ? (
+              <Button
+                btnStyle={ButtonStyle.secondary}
+                content="Log out"
+                func={logOut}
+              />
+            ) : (
+              <Button
+                btnStyle={ButtonStyle.secondary}
+                content="Log in"
+                func={showLogin}
+              />
+            )}
           </div>
         </div>
       </div>
-      {login && (
+      {login && !userLog && (
         <div className={styles.loginWrapper}>
           <LoginBox />
           <h1 onClick={hideLogin}>

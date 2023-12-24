@@ -29,6 +29,7 @@ export default function Home() {
             {pools.map((e, i) => {
               return (
                 <Pool
+                  id={e.id}
                   key={i}
                   images={e.images[0].directus_files_id}
                   name={e.name}

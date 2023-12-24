@@ -1,0 +1,262 @@
+.wrapper {
+  .header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    h1 {
+      flex: auto;
+    }
+    & > div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      width: 120px;
+      cursor: pointer;
+      .btnHeaderIcon {
+        height: 26px;
+        margin: 0 10px;
+      }
+      &:hover {
+        p {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+.pics {
+  display: grid;
+  grid-template:
+    "mot mot hai ba"
+    "mot mot bon nam";
+  gap: 18px;
+  .img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1/1;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transition-duration: 0.3s;
+    &:hover {
+      filter: brightness(0.8);
+    }
+  }
+  .item1 {
+    grid-area: mot;
+  }
+  .item2 {
+    grid-area: hai;
+  }
+  .item3 {
+    grid-area: ba;
+  }
+  .item4 {
+    grid-area: bon;
+  }
+  .item5 {
+    grid-area: nam;
+  }
+}
+
+.detailWrapper {
+  & > div {
+    width: 100%;
+    padding: 60px 0;
+    border-bottom: 2px solid black;
+  }
+  .detail {
+    height: 660px;
+    display: flex;
+    justify-content: space-between;
+    & > div {
+      height: 100%;
+    }
+    .trai {
+      width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      & > div {
+        width: 100%;
+        padding: 20px 60px;
+        border: 1px solid #158ac7;
+        border-radius: 20px;
+      }
+      .tren {
+        ul {
+          li {
+            margin: 20px 0;
+            .listIcon {
+              margin-right: 20px;
+            }
+          }
+        }
+      }
+      .duoi {
+        * {
+          margin: 24px 0;
+        }
+      }
+    }
+    .phai {
+      display: flex;
+      justify-content: center;
+      .main {
+        width: 440px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-evenly;
+        border: 1px solid #158ac7;
+        border-radius: 20px;
+        .formjday {
+          cursor: pointer;
+          height: 160px;
+          width: 90%;
+          background-color: #22bfea;
+          display: flex;
+          border-radius: 20px;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          border: 2px solid white;
+          input {
+            // width: 100%;
+            // background-color: transparent;
+            // border: none;
+          }
+          .datePicker {
+            height: 50%;
+            border-radius: 20px 20px 0 0;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 2px solid white;
+          }
+          .ticketPicker {
+            height: 50%;
+            border-radius: 0 0 20px 20px;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            div {
+              width: 50%;
+              height: 100%;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              padding: 10px;
+              color: white;
+              .numbers {
+                width: 50%;
+                font-weight: 700;
+                display: flex;
+                justify-content: space-evenly;
+                span {
+                  margin: 0 10px;
+                }
+                p {
+                  cursor: pointer;
+                  width: 20px;
+                  height: 20px;
+                  border-radius: 50%;
+                  text-align: center;
+                  &:hover {
+                    background-color: rgba(0, 0, 0, 0.158);
+                  }
+                }
+              }
+            }
+            .nglon {
+              border-right: 2px solid white;
+            }
+            .treem {
+            }
+          }
+        }
+      }
+    }
+  }
+  .kbt1 {
+    h2 {
+      padding: 10px 0;
+    }
+    .kbt1Elements {
+      height: 200px;
+      width: 70%;
+      min-width: 900px;
+      display: grid;
+      grid-template: auto auto auto / auto auto;
+      .kbt1Element {
+        display: flex;
+        align-items: center;
+        margin: 10px;
+        span {
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+  .phankhuc {
+    h2 {
+      padding: 10px 0;
+    }
+    .pkhucElements {
+      width: 100%;
+      display: flex;
+      justify-content: space-evenly;
+      .pkhucElement {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 300px;
+        margin: 10px;
+        margin-top: 30px;
+        span {
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+  .map {
+    iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+  }
+}
+
+.formjday {
+  input[type="date"] {
+    background-color: transparent;
+    padding: 16px;
+    font-family: "Roboto Mono", monospace;
+    color: #ffffff;
+    font-size: 18px;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    width: 60px;
+  }
+  ::-webkit-calendar-picker-indicator {
+    background-color: #ffffff;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 3px;
+    width: 100%;
+    // height: 100%;
+  }
+}

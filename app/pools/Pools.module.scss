@@ -7,12 +7,14 @@
     display: flex;
     flex-direction: column;
     padding: 10px;
-    background-color: rgba(107, 212, 212, 0.671);
     .mainHeader {
       a {
         color: #22bfea;
         font-size: 18px;
         font-weight: 500;
+      }
+      .mainHref {
+        color: #000000;
       }
     }
     .idk {

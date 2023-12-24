@@ -1,0 +1,54 @@
+.wrapper {
+  height: 590px;
+  .mainHeader {
+    a {
+      color: #22bfea;
+      font-size: 18px;
+      font-weight: 500;
+    }
+    .mainHref {
+      color: #000000;
+    }
+  }
+  .main {
+    background-color: rgba(255, 10, 10, 0.044);
+    display: grid;
+    grid-template: 400px / 1fr 1fr;
+    gap: 10px;
+    margin: 40px 0;
+    & > div {
+      margin: 20px;
+      background-color: rgba(0, 128, 0, 0.247);
+      border: 1px solid black;
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      & > div {
+        width: 100%;
+        margin: 10px 0;
+        background-color: transparent;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 60px 0 10px;
+        & > label {
+          width: 160px;
+        }
+        input[type="text"] {
+          height: 30px;
+          border: 1px solid #000000;
+          font-size: 16px;
+          flex: auto;
+          background-color: rgba(239, 239, 239, 0);
+          padding: 0 16px;
+          &:focus {
+            outline: 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+}

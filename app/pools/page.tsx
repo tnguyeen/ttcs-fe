@@ -2,68 +2,67 @@
 import SearchPool from "@/components/SearchPool/SearchPool"
 import Pool, { PoolProps } from "@/components/Pool/Pool"
 import styles from "./Pools.module.scss"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import ReactPaginate from "react-paginate"
 import Axios from "axios"
-import Host from "@/components/Host/Host"
 import Link from "next/link"
-import anh from "./searchSec.jpg"
+import axios from "axios"
+import api from "@/api"
 
 const resultsFilters: Array<{ filter: string; id: number }> = [
   { filter: "Đề xuất của chúng tôi", id: 1 },
   { filter: "Được ưa chuộng nhất", id: 2 },
   { filter: "Giá thấp nhất", id: 3 },
 ]
-const items: Array<number> = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
 function Items({ currentItems }: any) {
   return (
     <>
       {currentItems &&
-        currentItems.map((item: number) => (
+        currentItems.map((e: PoolProps) => (
           <Pool
-            images={anh}
-            name="Bể bơi bốn mùa Vinhomes OceanPark "
-            location="location"
-            description="Được xây dựng với diện tích lên đến 2000m2, sở hữu 1 bể bơi rộng
-                  1000m2 dành cho người lớn, 120m2 cho trẻ em....."
-            rating={item}
+            id={e.id}
+            images={e.images[0].directus_files_id}
+            name={e.name}
+            location={e.location}
+            description={e.description}
+            rating={e.rating}
             expand={true}
-            key={item}
+            key={e.id}
           />
         ))}
     </>
   )
 }
 
-export default function Home() {
+export default function Pools() {
   const [currentTab, setCurrentTab] = useState<number>(1)
+  const [pools, setPools] = useState<Array<PoolProps>>([])
 
   const [itemOffset, setItemOffset] = useState(0)
-  const endOffset = itemOffset + 4
-  const currentItems = items.slice(itemOffset, endOffset)
-  const pageCount = Math.ceil(items.length / 4)
+  const currentItems = pools.slice(itemOffset, itemOffset + 4)
+  const pageCount = Math.ceil(pools.length / 4)
 
   const handlePageClick = (event: any) => {
-    const newOffset = (event.selected * 4) % items.length
+    const newOffset = (event.selected * 4) % pools.length
     setItemOffset(newOffset)
   }
 
   const hdClickRF = (e: number) => {
     setCurrentTab(e)
-    items.reverse()
+    pools.reverse()
   }
 
-  // const getPools = () => {
-  //   Axios.get(
-  //     "https://froakie.io.vn/items/pool?fields=*,images.*&limit=4&page=1&sort=rating"
-  //   )
-  //     .then((res) => setPools(res.data.data))
-  //     .catch((err) => console.log(err))
-  // }
-  // useEffect(() => {
-  //   getPools()
-  // }, [])
+  useEffect(() => {
+    axios(`${api}/pool?service=1,2,3&date=2023-11-23`)
+      .then((res) => {
+        setPools(res.data.data)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }, [])
+
   return (
     <>
       <div className={styles.wrapper}>
@@ -74,7 +73,10 @@ export default function Home() {
               Trang chủ
             </Link>
             <span>{`  >  `}</span>
-            <Link href="/pools"> Các hồ bơi trên Hà Nội</Link>
+            <Link href="/pools" className={styles.mainHref}>
+              {" "}
+              Các hồ bơi trên Hà Nội
+            </Link>
           </div>
           <span style={{ margin: "10px" }}>{330} địa điểm</span>
           <div className={styles.idk}>
@@ -154,42 +156,6 @@ export default function Home() {
                 ))}
               </div>
               <div className={styles.pools}>
-                {/* <Pool
-                  images={anh}
-                  name="Bể bơi bốn mùa Vinhomes OceanPark"
-                  location="location"
-                  description="Được xây dựng với diện tích lên đến 2000m2, sở hữu 1 bể bơi rộng
-                  1000m2 dành cho người lớn, 120m2 cho trẻ em....."
-                  rating={3}
-                  expand={true}
-                />
-                <Pool
-                  images={anh}
-                  name="Bể bơi bốn mùa Vinhomes OceanPark"
-                  location="location"
-                  description="Được xây dựng với diện tích lên đến 2000m2, sở hữu 1 bể bơi rộng
-                  1000m2 dành cho người lớn, 120m2 cho trẻ em....."
-                  rating={3}
-                  expand={true}
-                />
-                <Pool
-                  images={anh}
-                  name="Bể bơi bốn mùa Vinhomes OceanPark"
-                  location="location"
-                  description="Được xây dựng với diện tích lên đến 2000m2, sở hữu 1 bể bơi rộng
-                  1000m2 dành cho người lớn, 120m2 cho trẻ em....."
-                  rating={3}
-                  expand={true}
-                />
-                <Pool
-                  images={anh}
-                  name="Bể bơi bốn mùa Vinhomes OceanPark"
-                  location="location"
-                  description="Được xây dựng với diện tích lên đến 2000m2, sở hữu 1 bể bơi rộng
-                  1000m2 dành cho người lớn, 120m2 cho trẻ em....."
-                  rating={3}
-                  expand={true}
-                /> */}
                 <Items currentItems={currentItems} />
                 <ReactPaginate
                   breakLabel="..."
