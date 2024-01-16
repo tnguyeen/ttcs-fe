@@ -180,6 +180,7 @@
             }
             .nglon {
               border-right: 2px solid white;
+              flex: auto;
             }
             .treem {
             }
@@ -188,20 +189,21 @@
       }
     }
   }
-  .kbt1 {
+  .service {
     h2 {
       padding: 10px 0;
     }
-    .kbt1Elements {
-      height: 200px;
+    .serviceElements {
+      height: 100px;
       width: 70%;
       min-width: 900px;
       display: grid;
-      grid-template: auto auto auto / auto auto;
+      grid-template: auto / auto auto auto;
       .kbt1Element {
         display: flex;
         align-items: center;
         margin: 10px;
+        font-size: 20px;
         span {
           margin-left: 10px;
         }

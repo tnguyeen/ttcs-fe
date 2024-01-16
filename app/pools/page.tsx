@@ -4,16 +4,32 @@ import Pool, { PoolProps } from "@/components/Pool/Pool"
 import styles from "./Pools.module.scss"
 import { useEffect, useState } from "react"
 import ReactPaginate from "react-paginate"
-import Axios from "axios"
 import Link from "next/link"
 import axios from "axios"
 import api from "@/api"
+import { useSearchParams } from "next/navigation"
+
+interface serviceModel {
+  code: string
+  name: string
+  id: number
+}
+interface priceModel {
+  from_price: number
+  to_price: number
+  id: number
+}
 
 const resultsFilters: Array<{ filter: string; id: number }> = [
-  { filter: "Đề xuất của chúng tôi", id: 1 },
+  // { filter: "Đề xuất của chúng tôi", id: 1 },
   { filter: "Được ưa chuộng nhất", id: 2 },
   { filter: "Giá thấp nhất", id: 3 },
 ]
+
+const VND = new Intl.NumberFormat("vi-VN", {
+  style: "currency",
+  currency: "VND",
+})
 
 function Items({ currentItems }: any) {
   return (
@@ -28,6 +44,7 @@ function Items({ currentItems }: any) {
             description={e.description}
             rating={e.rating}
             expand={true}
+            tickets={e.tickets}
             key={e.id}
           />
         ))}
@@ -36,8 +53,12 @@ function Items({ currentItems }: any) {
 }
 
 export default function Pools() {
-  const [currentTab, setCurrentTab] = useState<number>(1)
+  const searchParam = useSearchParams()
+  const [currentTab, setCurrentTab] = useState<number>(2)
   const [pools, setPools] = useState<Array<PoolProps>>([])
+
+  const [listServices, setListServices] = useState<Array<serviceModel>>([])
+  const [listPrices, setListPrices] = useState<Array<priceModel>>([])
 
   const [itemOffset, setItemOffset] = useState(0)
   const currentItems = pools.slice(itemOffset, itemOffset + 4)
@@ -50,13 +71,40 @@ export default function Pools() {
 
   const hdClickRF = (e: number) => {
     setCurrentTab(e)
-    pools.reverse()
+    if (e == 2) {
+      setPools(
+        pools.sort(function (a: PoolProps, b: PoolProps) {
+          return b.rating! - a.rating!
+        })
+      )
+    } else {
+      setPools(
+        pools.sort(function (a: PoolProps, b: PoolProps) {
+          return b.tickets![0].price - a.tickets![0].price
+        })
+      )
+    }
   }
 
   useEffect(() => {
-    axios(`${api}/pool?service=1,2,3&date=2023-11-23`)
+    console.log(searchParam.get("location"))
+
+    axios(`${api}/pool?service=1,2,3`)
       .then((res) => {
-        setPools(res.data.data)
+        console.log(res.data.data)
+        setPools(
+          res.data.data.sort(function (a: PoolProps, b: PoolProps) {
+            return b.rating! - a.rating!
+          })
+        )
+        return axios(`${api}/items/service?fields=code,name,id`)
+      })
+      .then((res) => {
+        setListServices(res.data.data)
+        return axios(`${api}/items/price`)
+      })
+      .then((res) => {
+        setListPrices(res.data.data)
       })
       .catch((err) => {
         console.log(err)
@@ -78,69 +126,50 @@ export default function Pools() {
               Các hồ bơi trên Hà Nội
             </Link>
           </div>
-          <span style={{ margin: "10px" }}>{330} địa điểm</span>
+          {false && <span style={{ margin: "10px" }}>{330} địa điểm</span>}
           <div className={styles.idk}>
             <div className={styles.filters}>
               <form className={styles.filtersBox}>
                 <h2 className={styles.header}>Lọc</h2>
                 <p>Loại bể</p>
-                <div>
-                  <input
-                    type="radio"
-                    id="normal"
-                    name="type"
-                    value="normal"
-                    className={styles.filterInput}
-                  />
-                  <label htmlFor="normal">Bể thường</label>
-                </div>
-                <br></br>
-                <div>
-                  <input
-                    type="radio"
-                    id="special"
-                    name="type"
-                    value="special"
-                    className={styles.filterInput}
-                  />
-                  <label htmlFor="special">Bể bơi 4 mùa</label>
-                </div>
-                <br></br>
+                {listPrices.map((e, i) => {
+                  return (
+                    <>
+                      <div>
+                        <input
+                          type="radio"
+                          id={String(e.id)}
+                          name="type"
+                          value={String(e.id)}
+                          className={styles.filterInput}
+                        />
+                        <label htmlFor={String(e.id)}>{`Từ ${VND.format(
+                          e.from_price
+                        )} - ${VND.format(e.to_price)}`}</label>
+                      </div>
+                      <br></br>
+                    </>
+                  )
+                })}
 
                 <p>Dịch vụ đi kèm</p>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="dichvu1"
-                    name="type"
-                    value="dichvu1"
-                    className={styles.filterInput}
-                  />
-                  <label htmlFor="dichvu1">Thuê quần, áo, kính bơi</label>
-                </div>
-                <br></br>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="dichvu2"
-                    name="type"
-                    value="dichvu2"
-                    className={styles.filterInput}
-                  />
-                  <label htmlFor="dichvu2">Phao bơi</label>
-                </div>
-                <br></br>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="dichvu3"
-                    name="type"
-                    value="dichvu3"
-                    className={styles.filterInput}
-                  />
-                  <label htmlFor="dichvu3">Đồ uống</label>
-                </div>
-                <br></br>
+                {listServices.map((e, i) => {
+                  return (
+                    <>
+                      <div>
+                        <input
+                          type="checkbox"
+                          id={e.code}
+                          name="type"
+                          value={e.id}
+                          className={styles.filterInput}
+                        />
+                        <label htmlFor={e.code}>{e.name}</label>
+                      </div>
+                      <br></br>
+                    </>
+                  )
+                })}
               </form>
             </div>
             <div className={styles.results}>

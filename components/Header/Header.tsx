@@ -47,13 +47,13 @@ export default function Header() {
             {userLog ? (
               <Button
                 btnStyle={ButtonStyle.secondary}
-                content="Log out"
+                content="Đăng xuất"
                 func={logOut}
               />
             ) : (
               <Button
                 btnStyle={ButtonStyle.secondary}
-                content="Log in"
+                content="Đăng nhập"
                 func={showLogin}
               />
             )}

@@ -15,6 +15,36 @@ export interface PoolProps {
   description?: string
   rating?: number
   expand: boolean
+  tickets?: [
+    {
+      id: number
+      status: string
+      sort: string
+      user_created: string
+      date_created: string
+      user_updated: string
+      date_updated: string
+      pool_id: number
+      ticket_type: string
+      price: number
+      total_ticket: number
+      ticket_remain: number
+    },
+    {
+      id: number
+      status: string
+      sort: string
+      user_created: string
+      date_created: string
+      user_updated: string
+      date_updated: string
+      pool_id: number
+      ticket_type: string
+      price: number
+      total_ticket: number
+      ticket_remain: number
+    }
+  ]
 }
 
 export default function Pool({
@@ -25,23 +55,26 @@ export default function Pool({
   description,
   rating,
   expand,
+  tickets,
 }: PoolProps) {
   if (expand) {
     return (
       <div className={styles.expand}>
-        <Image
-          className={styles.pic}
-          src={`https://froakie.io.vn/assets/` + images}
-          alt="pic"
-          height={184}
-          width={240}
-        />
+        <Link href={`/pools/${id}`} className={styles.name}>
+          <Image
+            className={styles.pic}
+            src={`https://froakie.io.vn/assets/` + images}
+            alt="pic"
+            height={184}
+            width={240}
+          />
+        </Link>
         <div className={styles.details}>
           <Link href={`/pools/${id}`} className={styles.name}>
             {name}
           </Link>
           <span className={styles.description}>{description}</span>
-          <span className={styles.rating}>
+          <span style={{ margin: "6px 0" }} className={styles.rating}>
             <FontAwesomeIcon
               icon={faStar}
               size="lg"
@@ -50,7 +83,7 @@ export default function Pool({
             />
             {rating + " / 5"}
           </span>
-          <span className={styles.location}>
+          <span style={{ margin: "6px 0" }} className={styles.location}>
             <FontAwesomeIcon
               icon={faLocationDot}
               size="lg"
@@ -60,32 +93,34 @@ export default function Pool({
             {location}
           </span>
           <div className={styles.btn}>
-            <Button btnStyle={ButtonStyle.primary} content="Đặt vé" />
+            <Link href={`/pools/${id}`} className={styles.name}>
+              <Button btnStyle={ButtonStyle.primary} content="Đặt vé" />
+            </Link>
           </div>
         </div>
       </div>
     )
   }
   return (
-    <div className={styles.wrapper}>
-      <Image
-        className={styles.pic}
-        src={`https://froakie.io.vn/assets/` + images}
-        alt="pic"
-        height={290}
-        width={300}
-      />
-      <Link href={`/pools/${id}`} className={styles.name}>
-        {name}
-      </Link>
-      <span className={styles.location}>
-        <FontAwesomeIcon
-          icon={faLocationDot}
-          size="lg"
-          style={{ margin: "0 8px" }}
+    <Link href={`/pools/${id}`} className={styles.name}>
+      <div className={styles.wrapper}>
+        <Image
+          className={styles.pic}
+          src={`https://froakie.io.vn/assets/` + images}
+          alt="pic"
+          height={290}
+          width={300}
         />
-        {location}
-      </span>
-    </div>
+        <p>{name}</p>
+        <span className={styles.location}>
+          <FontAwesomeIcon
+            icon={faLocationDot}
+            size="lg"
+            style={{ margin: "0 8px" }}
+          />
+          {location}
+        </span>
+      </div>
+    </Link>
   )
 }

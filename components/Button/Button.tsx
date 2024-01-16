@@ -19,6 +19,11 @@ export enum ButtonType {
   submit = "submit",
 }
 
+const VND = new Intl.NumberFormat("vi-VN", {
+  style: "currency",
+  currency: "VND",
+})
+
 export default function Button({
   type,
   btnStyle,
@@ -26,7 +31,6 @@ export default function Button({
   func,
   priceForTicket,
 }: ButtonProps) {
-  const [price, setPrice] = useState<number>(0)
   return (
     <button
       type={type}
@@ -43,8 +47,8 @@ export default function Button({
       {priceForTicket && <br />}
       {priceForTicket &&
         `Tổng tiền: ${
-          typeof priceForTicket == "boolean" ? 0 : priceForTicket
-        } VNĐ`}
+          typeof priceForTicket == "boolean" ? 0 : VND.format(priceForTicket)
+        } `}
     </button>
   )
 }

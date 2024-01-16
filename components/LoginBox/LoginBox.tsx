@@ -7,6 +7,7 @@ import axios from "axios"
 import api from "@/api"
 import { useDispatch, useSelector } from "react-redux"
 import { setLogin } from "@/state"
+import Swal from "sweetalert2"
 
 export default function LoginBox() {
   const [usernameValue, setUsernameValue] = useState<string>("")
@@ -43,7 +44,13 @@ export default function LoginBox() {
         localStorage.setItem("user", data.email)
         localStorage.setItem("token", res.access_token)
       })
-      .catch((err) => console.log(err))
+      .catch((err) => {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: err.response.data.message,
+        })
+      })
   }
 
   const loginGoogle = () => {}

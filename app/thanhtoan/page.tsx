@@ -11,11 +11,13 @@ import {
   useState,
 } from "react"
 import LoginBox from "@/components/LoginBox/LoginBox"
+import Swal from "sweetalert2"
 import Button, { ButtonStyle, ButtonType } from "@/components/Button/Button"
 import { useSearchParams } from "next/navigation"
 import axios from "axios"
 import api from "@/api"
 import Link from "next/link"
+import { useSelector } from "react-redux"
 
 interface PoolModel {
   id: number
@@ -124,6 +126,7 @@ interface PoolModel {
       date_updated: string
       pool_id: number
       ticket_type: string
+      ticket_name: string
       price: number
       total_ticket: number
       ticket_remain: number
@@ -135,6 +138,7 @@ interface PoolModel {
       user_created: string
       date_created: string
       user_updated: string
+      ticket_name: string
       date_updated: string
       pool_id: number
       ticket_type: string
@@ -146,32 +150,138 @@ interface PoolModel {
   reviews: []
 }
 
+const VND = new Intl.NumberFormat("vi-VN", {
+  style: "currency",
+  currency: "VND",
+})
+
 export default function Thanhtoan() {
   const searchParam = useSearchParams()
   const [pool, setPool] = useState<PoolModel>()
-  const [pttt, setPttt] = useState<string>("")
+  const [userId, setUserId] = useState<string>("")
   const [name, setName] = useState("")
   const [sdt, setSdt] = useState("")
-  const [dchi, setDchi] = useState("")
+  const [email, setEmail] = useState("")
+  const userLog = useSelector((state: any) => state.token)
 
-  function handlechange() {
-    const data = {
-      name: name,
-      sdt: sdt,
-      dchi: dchi,
-      pttt: pttt,
+  function handleSubmit() {
+    if (!userLog) {
+      Swal.fire({
+        // title: "The Internet?",
+        text: "Bạn cần phải đăng nhập để thực hiện thanh toán!",
+        icon: "error",
+      })
+      return
     }
-    console.log(data)
+    if (!pool) {
+      Swal.fire({
+        // title: "The Internet?",
+        text: "Không tìm thấy bể bơi.",
+        icon: "error",
+      })
+      return
+    }
+
+    if (name === "") {
+      Swal.fire({
+        // title: "The Internet?",
+        text: "Vui lòng nhập tên.",
+        icon: "error",
+      })
+      return
+    }
+    if (email === "") {
+      Swal.fire({
+        // title: "The Internet?",
+        text: "Vui lòng nhập địa chỉ Email.",
+        icon: "error",
+      })
+      return
+    }
+    if (sdt === "") {
+      Swal.fire({
+        // title: "The Internet?",
+        text: "Vui lòng nhập số điện thoại.",
+        icon: "error",
+      })
+      return
+    }
+
+    const data = {
+      customer_id: "cf5a7b32-4ad8-4e4f-9517-186ea29ad239",
+      order_date: new Date().toJSON(),
+      pool_id: searchParam.get("p_id"),
+      tickets: {
+        create: [
+          searchParam.get("na") != "0" && {
+            ticket_id: pool.tickets[0].id,
+            quantity: Number(searchParam.get("na")),
+            date_available: searchParam.get("date"),
+            total_amount: null,
+          },
+        ],
+        update: [],
+        delete: [],
+      },
+      email_receiver: email,
+      phone_number_receiver: sdt,
+      total_amount: null,
+    }
+    if (searchParam.get("nc") != "0" && pool.tickets[1]) {
+      data.tickets.create.push({
+        ticket_id: pool.tickets[1].id,
+        quantity: Number(searchParam.get("nc")),
+        date_available: searchParam.get("date"),
+        total_amount: null,
+      })
+    }
+
+    axios
+      .post(`${api}/items/order`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        let link = `${api}/order/create_payment_url?order_id=${res.data.data.id}&amount=${res.data.data.total_amount}`
+
+        return axios.get(link)
+      })
+      .then((res) => {
+        window.open(res.data.data.redirectUrl, "_ blank")
+      })
+      .catch((err) => {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: err.response.data.message,
+        })
+      })
   }
 
   useEffect(() => {
     axios(`${api}/pool/${searchParam.get("p_id")}`)
       .then((res) => {
-        setPool(res.data)
+        setPool(res.data.data)
       })
       .catch((err) => {
-        return <h1>Khong tim thay be boi nay</h1>
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: err.response.data.message,
+          footer: '<a href="/">Trở về trang chủ</a>',
+        })
       })
+    axios
+      .get(`${api}/users/me`, {
+        headers: {
+          Authorization: "Bearer " + userLog,
+        },
+      })
+      .then((res) => {
+        // setUserId(res.data.data.id)
+      })
+      .catch((err) => err)
   }, [])
 
   return (
@@ -183,7 +293,7 @@ export default function Thanhtoan() {
         <span>{`  >  `}</span>
         <Link href="" className={styles.mainHref}>
           {" "}
-          Thanh toans
+          Thanh toán
         </Link>
       </div>
       <div className={styles.main}>
@@ -194,13 +304,15 @@ export default function Thanhtoan() {
             </div>
             <div className={styles.location}>{pool?.location}</div>
             <div className={styles.numAdult}>
-              {`x${searchParam.get("na")}  Người lớn`}
-              <p>{pool.tickets[0].price + " VND"}</p>
+              {`x${searchParam.get("na")}  ${pool.tickets[0].ticket_name}`}
+              <p>{VND.format(pool.tickets[0].price)}</p>
             </div>
-            <div className={styles.numChild}>
-              {`x${searchParam.get("nc")}  Trẻ em`}
-              <p>{pool.tickets[1].price + " VND"}</p>
-            </div>
+            {pool.tickets[1] && (
+              <div className={styles.numChild}>
+                {`x${searchParam.get("nc")}  ${pool.tickets[1].ticket_name} `}
+                <p>{VND.format(pool.tickets[1].price)}</p>
+              </div>
+            )}
             <div className={styles.date}>
               <p>Thời gian:</p>
               {searchParam.get("date")}
@@ -211,9 +323,13 @@ export default function Thanhtoan() {
               style={{ flex: "auto", alignItems: "center" }}
             >
               <strong style={{ fontSize: 20 }}>Tổng tiền:</strong>
-              {pool!.tickets[0].price * Number(searchParam.get("na")) +
-                pool!.tickets[1].price * Number(searchParam.get("nc")) +
-                " VND"}
+              {VND.format(
+                (pool.tickets[0] &&
+                  pool.tickets[0].price * Number(searchParam.get("na"))) +
+                  (pool.tickets[1]
+                    ? pool.tickets[1].price * Number(searchParam.get("nc"))
+                    : 0)
+              )}
             </div>
           </div>
         )}
@@ -227,6 +343,7 @@ export default function Thanhtoan() {
               type="text"
               id="ten"
               value={name}
+              placeholder="Vui lòng nhập tên"
               onChange={(e) => setName(e.target.value)}
             />
           </div>
@@ -234,44 +351,21 @@ export default function Thanhtoan() {
             <label htmlFor="sdt">Số điện thoại: </label>
             <input
               type="text"
+              placeholder="Vui lòng nhập số điện thoại"
               id="sdt"
               value={sdt}
               onChange={(e) => setSdt(e.target.value)}
             />
           </div>
           <div className={styles.dchi}>
-            <label htmlFor="dchi">Địa chỉ: </label>
+            <label htmlFor="dchi">Email: </label>
             <input
               type="text"
               id="dchi"
-              value={dchi}
-              onChange={(e) => setDchi(e.target.value)}
+              placeholder="Vui lòng nhập địa chỉ email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-          </div>
-          <div className={styles.pttt} style={{ display: "flex" }}>
-            Phương thức thanh toán:
-            <div style={{ marginRight: "20px" }}>
-              <input
-                type="radio"
-                id="vnPay"
-                value="vnPay"
-                name="ptttRadio"
-                style={{ margin: "0 10px" }}
-                onChange={(e) => setPttt(e.target.value)}
-              />
-              <label htmlFor="vnPay">VNPay</label>
-              <br></br>
-              <br></br>
-              <input
-                type="radio"
-                id="tttt"
-                value="tttt"
-                name="ptttRadio"
-                style={{ margin: "0 10px" }}
-                onChange={(e) => setPttt(e.target.value)}
-              />
-              <label htmlFor="tttt">Thanh toán trực tiếp</label>
-            </div>
           </div>
         </div>
       </div>
@@ -281,8 +375,8 @@ export default function Thanhtoan() {
       >
         <Button
           btnStyle={ButtonStyle.primary}
-          content={"Xác nhận thông tin"}
-          func={handlechange}
+          content={"Thanh toán"}
+          func={handleSubmit}
         />
       </div>
     </div>

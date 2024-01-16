@@ -3,6 +3,7 @@ import { useRef, useState } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"
 import styles from "./SearchPool.module.scss"
+import { redirect } from "next/navigation"
 
 export default function SearchPool() {
   const [location, setLocation] = useState<string>("")
@@ -14,8 +15,8 @@ export default function SearchPool() {
 
   const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const fd = new FormData()
-    fd.append("location", location)
+    // window.open(`/pools?location=${location}`)
+    redirect(`/pools?location=${location}`)
   }
 
   return (
@@ -25,7 +26,7 @@ export default function SearchPool() {
           type="text"
           name="location"
           id="location"
-          placeholder="Search your location"
+          placeholder="Tìm kiếm"
           ref={inputLocation}
           onChange={changeHandler}
           value={location}
