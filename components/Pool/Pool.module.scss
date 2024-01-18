@@ -10,10 +10,14 @@
   align-items: center;
   position: relative;
   border: 1px solid black;
+  background-color: white;
   padding: 10px 16px;
   margin-bottom: 20px;
   transition: 0.3s;
   cursor: pointer;
+  & > * {
+    color: black;
+  }
   &:hover {
     transform: translateY(-10px);
   }
@@ -44,9 +48,13 @@
   align-items: center;
   flex-direction: row;
   border: 1px solid black;
+  background-color: white;
   padding: 10px 16px;
   margin-top: 20px;
   transition: 0.3s;
+  & > * {
+    color: black;
+  }
   .pic {
     border-radius: 10px;
     // width: 100% !important ;

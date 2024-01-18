@@ -1,5 +1,4 @@
 "use client"
-import Header from "../components/Header/Header"
 import SearchPool from "@/components/SearchPool/SearchPool"
 import Pool, { PoolProps } from "@/components/Pool/Pool"
 import styles from "./page.module.scss"
@@ -7,6 +6,7 @@ import { useEffect, useRef, useState } from "react"
 import Axios from "axios"
 import Host from "@/components/Host/Host"
 import api from "@/api"
+import Head from "next/head"
 
 export default function Home() {
   const [pools, setPools] = useState<Array<PoolProps>>([])
@@ -21,6 +21,9 @@ export default function Home() {
   }, [])
   return (
     <>
+      <Head>
+        <title>aaaa22</title>
+      </Head>
       <div className={styles.wrapper}>
         <SearchPool />
         <div className={styles.poolsSec}>

@@ -22,10 +22,19 @@ import { MouseEventHandler, useEffect, useRef, useState } from "react"
 import Slider from "@/components/Slide"
 import Button, { ButtonStyle } from "@/components/Button/Button"
 import axios from "axios"
+import SugPool from "@/components/Pool/Pool"
 import api from "@/api"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
 import GoogleMapReact from "google-map-react"
+import { Rating } from "react-simple-star-rating"
+import {
+  APIProvider,
+  Map,
+  useMapsLibrary,
+  Marker,
+} from "@vis.gl/react-google-maps"
+import Head from "next/head"
 
 //data
 
@@ -185,10 +194,17 @@ function iconService(name: string): IconDefinition {
   }
   return iconR
 }
+function parseHtml(str: string) {
+  const parser = new DOMParser()
+  const doc3 = parser.parseFromString(str, "text/xml")
+  console.log(doc3)
+  return doc3.documentElement.textContent
+}
 
 //main export
 export default function Pool({ params }: { params: { id: string } }) {
   const [pool, setPool] = useState<PoolModel>()
+  const [suggestPool, setSuggestPool] = useState<Array<PoolModel>>([])
   var today = new Date()
   var dd = String(today.getDate()).padStart(2, "0")
   var mm = String(today.getMonth() + 1).padStart(2, "0")
@@ -197,7 +213,10 @@ export default function Pool({ params }: { params: { id: string } }) {
 
   const [numAdult, setNumAdult] = useState<number>(0)
   const [numChild, setNumChild] = useState<number>(0)
+
   const position = { lat: 53.54, lng: 10 }
+  const geocodingLibrary = useMapsLibrary("geocoding")
+
   const router = useRouter()
 
   function handleCongAdult() {
@@ -237,6 +256,14 @@ export default function Pool({ params }: { params: { id: string } }) {
     axios(`${api}/pool/${params.id}`)
       .then((res) => {
         setPool(res.data.data)
+        return axios.get(
+          `${api}/pool?service=1,2,3&location=${
+            res.data.data.location.split(",")[1]
+          }`
+        )
+      })
+      .then((res) => {
+        setSuggestPool(res.data.data)
       })
       .catch((err) => {
         Swal.fire({
@@ -247,12 +274,21 @@ export default function Pool({ params }: { params: { id: string } }) {
         })
       })
   }, [params.id])
+
+  // useEffect(() => {
+  //   if (!geocodingLibrary) return
+
+  //   const geocoder = new geocodingLibrary.Geocoder()
+  //   // ...
+  // }, [geocodingLibrary])
+
   if (!pool) {
-    // redirect("/thanhtoan")
+    // window.location.href = window.location.origin
+    return
   }
 
   return (
-    pool && (
+    <>
       <div className={styles.wrapper}>
         <div className={styles.header}>
           <h1>{pool.name}</h1>
@@ -309,7 +345,7 @@ export default function Pool({ params }: { params: { id: string } }) {
               </div>
               <div className={styles.duoi}>
                 <h2>{pool.name}</h2>
-                <p>{pool.description}</p>
+                <div>{parseHtml(pool.description)}</div>
                 <span>Hiển thị thêm...</span>
               </div>
             </div>
@@ -403,7 +439,7 @@ export default function Pool({ params }: { params: { id: string } }) {
                         width={300}
                         height={200}
                       />
-                      <span>{e.name}</span>
+                      <span style={{ fontWeight: "500" }}>{e.name}</span>
                       <p>{e.description}</p>
                     </div>
                   )
@@ -425,7 +461,7 @@ export default function Pool({ params }: { params: { id: string } }) {
                 />
               </div>
             </APIProvider> */}
-            <div style={{ height: "400px", width: "100%" }}>
+            {/* <div style={{ height: "400px", width: "100%" }}>
               <GoogleMapReact
                 bootstrapURLKeys={{
                   key: "AIzaSyApZGB7UJRujOnfvwOrVE1-PfPA6ky4gvE",
@@ -436,14 +472,49 @@ export default function Pool({ params }: { params: { id: string } }) {
                 }}
                 defaultZoom={11}
               ></GoogleMapReact>
-            </div>
+            </div> */}
+            <APIProvider apiKey="AIzaSyApZGB7UJRujOnfvwOrVE1-PfPA6ky4gvE">
+              <div style={{ height: "100vh", width: "100%" }}>
+                <Map zoom={9} center={position}>
+                  <Marker position={position}></Marker>
+                </Map>
+              </div>
+            </APIProvider>
+            <APIProvider apiKey="AIzaSyApZGB7UJRujOnfvwOrVE1-PfPA6ky4gvE">
+              <Geocoding />
+            </APIProvider>
           </div>
-          <div className={styles.danhgia}></div>
-          <div className={styles.binhluan}></div>
+          <div className={styles.danhgia}>
+            <h2 style={{ marginRight: "20px" }}>Đánh giá:</h2>
+            <Rating
+              initialValue={pool.rating}
+              allowFraction
+              disableFillHover={true}
+              allowHover={false}
+              /* Available Props */
+            />
+            <h2 style={{ marginLeft: "20px" }}>{pool.rating} trên 5</h2>
+          </div>
+          {/* <div className={styles.binhluan}></div> */}
         </div>
-        <div className={styles.suggest}></div>
+        <div className={styles.suggest}>
+          <h2 style={{ marginRight: "20px" }}>Bể bơi lân cận</h2>
+          <div className={styles.pkhucElements}>
+            {suggestPool.map((e, i) => {
+              return (
+                <SugPool
+                  key={i}
+                  images={e.images[0].directus_files_id}
+                  name={e.name}
+                  location={e.location}
+                  expand={false}
+                />
+              )
+            })}
+          </div>
+        </div>
       </div>
-    )
+    </>
   )
 }
 
@@ -474,6 +545,41 @@ function PoolPics() {
       {active && (
         <Slider handleClose={handleClose} index={current} imgs={Imgs} />
       )}
+    </div>
+  )
+}
+
+function Geocoding() {
+  const geocodingApiLoaded = useMapsLibrary("geocoding")
+  const [geocodingService, setGeocodingService] =
+    useState<google.maps.Geocoder>()
+  const [geocodingResult, setGeocodingResult] =
+    useState<google.maps.GeocoderResult>()
+  const [address, _setAddress] = useState("10 Front St, Toronto")
+
+  useEffect(() => {
+    if (!geocodingApiLoaded) return
+    setGeocodingService(new window.google.maps.Geocoder())
+  }, [geocodingApiLoaded])
+
+  useEffect(() => {
+    if (!geocodingService || !address) return
+
+    geocodingService.geocode({ address }, (results, status) => {
+      if (results && status === "OK") {
+        setGeocodingResult(results[0])
+      }
+    })
+  }, [geocodingService, address])
+
+  if (!geocodingService) return <div>Loading...</div>
+  if (!geocodingResult) return <div>Geocoding...</div>
+
+  return (
+    <div>
+      <h1>{geocodingResult.formatted_address}</h1>
+      <p>Latitude: {geocodingResult.geometry.location.lat()}</p>
+      <p>Longitude: {geocodingResult.geometry.location.lng()}</p>
     </div>
   )
 }

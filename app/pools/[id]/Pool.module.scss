@@ -3,6 +3,9 @@
     height: 60px;
     display: flex;
     align-items: center;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
     h1 {
       flex: auto;
     }
@@ -85,6 +88,7 @@
         padding: 20px 60px;
         border: 1px solid #158ac7;
         border-radius: 20px;
+        background-color: white;
       }
       .tren {
         ul {
@@ -113,6 +117,7 @@
         align-items: center;
         justify-content: space-evenly;
         border: 1px solid #158ac7;
+        background-color: white;
         border-radius: 20px;
         .formjday {
           cursor: pointer;
@@ -238,6 +243,22 @@
       height: 600px;
       border: none;
     }
+  }
+  .danhgia {
+    display: flex;
+    align-items: center;
+  }
+}
+.suggest {
+  h2 {
+    padding: 10px 0;
+    margin-top: 60px;
+  }
+
+  .pkhucElements {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
   }
 }
 

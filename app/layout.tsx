@@ -23,7 +23,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body
+        className={inter.className}
+        style={{ backgroundColor: "rgb(245, 245, 245)" }}
+      >
         <Provider store={store}>
           <PersistGate persistor={persistor} loading={null}>
             <div
@@ -34,7 +37,12 @@ export default function RootLayout({
               }}
             >
               <div
-                style={{ height: "100%", width: "100%", maxWidth: "1440px" }}
+                style={{
+                  height: "100%",
+                  width: "100%",
+                  maxWidth: "1440px",
+                  marginTop: "50px",
+                }}
               >
                 <Header />
                 {children}

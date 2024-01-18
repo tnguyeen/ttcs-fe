@@ -9,7 +9,11 @@ import { useDispatch, useSelector } from "react-redux"
 import { setLogin } from "@/state"
 import Swal from "sweetalert2"
 
-export default function LoginBox() {
+type OrderProp = {
+  goToHome?: boolean
+}
+
+export default function LoginBox({ goToHome=false }: OrderProp) {
   const [usernameValue, setUsernameValue] = useState<string>("")
   const [passwordValue, setPasswordValue] = useState<string>("")
   const inputUsername = useRef<HTMLInputElement>(null)
@@ -43,12 +47,17 @@ export default function LoginBox() {
         )
         localStorage.setItem("user", data.email)
         localStorage.setItem("token", res.access_token)
+        if (goToHome) {
+          window.location.href = "/"
+        } else {
+          window.location.reload()
+        }
       })
       .catch((err) => {
         Swal.fire({
           icon: "error",
-          title: "Oops...",
-          text: err.response.data.message,
+          title: "Lỗi!",
+          text: "Vui lòng kiểm tra lại tài khoản hoặc mật khẩu.",
         })
       })
   }

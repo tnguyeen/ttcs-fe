@@ -5,6 +5,7 @@ export interface ButtonProps {
   type?: ButtonType
   btnStyle: ButtonStyle
   content: string
+  dis?: boolean
   func?: MouseEventHandler
   priceForTicket?: number | boolean
 }
@@ -30,10 +31,12 @@ export default function Button({
   content,
   func,
   priceForTicket,
+  dis,
 }: ButtonProps) {
   return (
     <button
       type={type}
+      disabled={dis}
       className={
         styles.btn +
         " " +

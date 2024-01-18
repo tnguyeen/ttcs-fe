@@ -2,15 +2,7 @@
 import Head from "next/head"
 import styles from "./Thanhtoan.module.scss"
 import Router from "next/router"
-import {
-  ChangeEvent,
-  EventHandler,
-  MouseEventHandler,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
-import LoginBox from "@/components/LoginBox/LoginBox"
+import { useEffect, useState } from "react"
 import Swal from "sweetalert2"
 import Button, { ButtonStyle, ButtonType } from "@/components/Button/Button"
 import { useSearchParams } from "next/navigation"
@@ -208,7 +200,7 @@ export default function Thanhtoan() {
     }
 
     const data = {
-      customer_id: "cf5a7b32-4ad8-4e4f-9517-186ea29ad239",
+      customer_id: userId,
       order_date: new Date().toJSON(),
       pool_id: searchParam.get("p_id"),
       tickets: {
@@ -279,7 +271,9 @@ export default function Thanhtoan() {
         },
       })
       .then((res) => {
-        // setUserId(res.data.data.id)
+        setName(res.data.data.first_name + " " + res.data.data.last_name)
+        setEmail(res.data.data.email)
+        setUserId(res.data.data.id)
       })
       .catch((err) => err)
   }, [])

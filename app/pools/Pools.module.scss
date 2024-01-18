@@ -2,11 +2,14 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+
   .main {
     height: 1160px;
+    background-color: white;
+    border-radius: 10px;
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    padding: 20px;
     .mainHeader {
       a {
         color: #22bfea;
@@ -41,19 +44,26 @@
           }
           p {
             font-size: 20px;
-            margin: 10px;
+            margin: 20px;
             font-weight: 500;
           }
           div {
             display: flex;
             align-items: center;
             margin: 4px;
+            cursor: pointer;
+            & > * {
+              cursor: pointer;
+            }
 
             .filterInput {
               height: 25px;
               width: 25px;
               border-radius: 10px;
               margin: 0 14px;
+            }
+            label {
+              flex: auto;
             }
           }
         }
@@ -65,7 +75,7 @@
         flex-direction: column;
         align-items: center;
         .resultsFilter {
-          background-color: #cccccc;
+          background-color: #e9e9e9;
           border-radius: 30px;
           border: 1px solid rgb(194, 194, 194);
           width: 100%;

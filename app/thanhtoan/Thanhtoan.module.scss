@@ -1,5 +1,8 @@
 .wrapper {
   height: 590px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 10px;
+  padding: 20px;
   .mainHeader {
     a {
       color: #22bfea;
@@ -11,7 +14,6 @@
     }
   }
   .main {
-    background-color: rgba(255, 10, 10, 0.044);
     display: grid;
     grid-template: 400px / 1fr 1fr;
     gap: 10px;

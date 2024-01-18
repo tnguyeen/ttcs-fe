@@ -57,8 +57,11 @@ export default function Pools() {
   const [currentTab, setCurrentTab] = useState<number>(2)
   const [pools, setPools] = useState<Array<PoolProps>>([])
 
-  const [listServices, setListServices] = useState<Array<serviceModel>>([])
   const [listPrices, setListPrices] = useState<Array<priceModel>>([])
+  const [listServices, setListServices] = useState<Array<serviceModel>>([])
+
+  const [priceId, setPriceId] = useState<priceModel>()
+  const [arrService, setArrService] = useState<Array<string>>([])
 
   const [itemOffset, setItemOffset] = useState(0)
   const currentItems = pools.slice(itemOffset, itemOffset + 4)
@@ -86,12 +89,26 @@ export default function Pools() {
     }
   }
 
-  useEffect(() => {
-    console.log(searchParam.get("location"))
+  const finalReq = () => {
+    let reqLocation: string = searchParam.get("location")
+      ? `location=${searchParam.get("location")}`
+      : ""
+    let reqService: string =
+      arrService.length != 0 ? `service=${arrService.join()}` : ""
+    let reqPrice: string = priceId
+      ? `from_price=${priceId?.from_price}&to_price=300000000`
+      : ""
+    let reqArr: Array<string> = [reqLocation, reqService, reqPrice]
 
-    axios(`${api}/pool?service=1,2,3`)
+    const a = reqArr.filter((ser) => ser !== "")
+    return a.join("&")
+  }
+
+  useEffect(() => {
+    console.log(finalReq())
+
+    axios(`${api}/pool?${finalReq()}`)
       .then((res) => {
-        console.log(res.data.data)
         setPools(
           res.data.data.sort(function (a: PoolProps, b: PoolProps) {
             return b.rating! - a.rating!
@@ -109,7 +126,7 @@ export default function Pools() {
       .catch((err) => {
         console.log(err)
       })
-  }, [])
+  }, [searchParam.get("location"), arrService, priceId])
 
   return (
     <>
@@ -139,6 +156,9 @@ export default function Pools() {
                         <input
                           type="radio"
                           id={String(e.id)}
+                          onChange={(el) => {
+                            setPriceId(e)
+                          }}
                           name="type"
                           value={String(e.id)}
                           className={styles.filterInput}
@@ -161,6 +181,19 @@ export default function Pools() {
                           type="checkbox"
                           id={e.code}
                           name="type"
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setArrService((current) => [
+                                ...current,
+                                e.target.value,
+                              ])
+                            } else {
+                              const a = arrService.filter(
+                                (ser) => ser !== e.target.value
+                              )
+                              setArrService(a)
+                            }
+                          }}
                           value={e.id}
                           className={styles.filterInput}
                         />

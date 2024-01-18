@@ -5,6 +5,9 @@ import Router from "next/router"
 import { useRef, useState } from "react"
 import LoginBox from "@/components/LoginBox/LoginBox"
 import Button, { ButtonStyle, ButtonType } from "@/components/Button/Button"
+import Swal from "sweetalert2"
+import axios from "axios"
+import api from "@/api"
 
 export default function Register() {
   const [login, setLogin] = useState<Boolean>(false)
@@ -45,18 +48,32 @@ export default function Register() {
     e.preventDefault()
 
     if (passwordValue !== cfmPassValue) {
-      alert("Confirm password is not equal to password!")
+      Swal.fire({
+        title: "Lỗi!",
+        text: "Mật khẩu không khớp!",
+      })
       return
     }
 
-    const fd = new FormData()
-    fd.append("username", usernameValue)
-    fd.append("fullname", fullnameValue)
-    fd.append("email", emailValue)
-    fd.append("password", passwordValue)
-    fd.append("cfmPass", cfmPassValue)
-    fd.append("profilepic", profilePic)
-    alert("tete")
+    const fd = {
+      email: emailValue,
+      password: passwordValue,
+      first_name: fullnameValue,
+      last_name: usernameValue,
+    }
+
+    axios
+      .post(`${api}/users`, fd)
+      .then((res) => {
+        Swal.fire({
+          title: "Đăng kí thành công!",
+          text: "Vui lòng xác nhận tài khoản qua địa chỉ gmail trước khi đăng nhập.",
+          confirmButtonText: "Xác nhận",
+        }).then(function (result) {
+          window.location.href = "/"
+        })
+      })
+      .catch((err) => err)
   }
   return (
     <>
@@ -82,11 +99,11 @@ export default function Register() {
             method="POST"
           >
             <div>
-              <label htmlFor="fullname">Full name</label>
+              <label htmlFor="firstname">Tên : </label>
               <br />
               <input
                 type="text"
-                id="fullname"
+                id="firstname"
                 ref={inputFullname}
                 onChange={changeHandler}
                 value={fullnameValue}
@@ -97,11 +114,11 @@ export default function Register() {
               />
             </div>
             <div>
-              <label htmlFor="username">Username</label>
+              <label htmlFor="lastname">Họ : </label>
               <br />
               <input
                 type="text"
-                id="username"
+                id="lastname"
                 ref={inputUsername}
                 onChange={changeHandler}
                 value={usernameValue}
@@ -112,21 +129,21 @@ export default function Register() {
               />
             </div>
             <div>
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">Địa chỉ Email : </label>
               <br />
               <input
-                type="text"
+                type="email"
                 id="email"
                 ref={inputEmail}
                 onChange={changeHandler}
                 value={emailValue}
                 required
-                minLength={4}
-                pattern="[A-Za-z0-9]+"
+                // minLength={4}
+                // pattern="[A-Za-z0-9]+"
               />
             </div>
             <div>
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">Mật khẩu : </label>
               <br />
               <input
                 type="password"
@@ -141,7 +158,7 @@ export default function Register() {
               />
             </div>
             <div>
-              <label htmlFor="cfmPass">Confirm Password</label>
+              <label htmlFor="cfmPass">Xác nhận mật khẩu : </label>
               <br />
               <input
                 type="password"
@@ -155,7 +172,7 @@ export default function Register() {
                 pattern="[A-Za-z0-9]+"
               />
             </div>
-            <div>
+            {/* <div>
               <label
                 className={styles.proPic}
                 htmlFor="role"
@@ -174,11 +191,11 @@ export default function Register() {
                 onChange={changePicHandler}
                 style={{ display: "none" }}
               />
-            </div>
+            </div> */}
             <Button
               type={ButtonType.submit}
               btnStyle={ButtonStyle.primary}
-              content="Register"
+              content="Đăng kí"
             />
           </form>
           <div>
@@ -195,7 +212,7 @@ export default function Register() {
       </div>
       {login && (
         <div className={styles.loginWrapper}>
-          <LoginBox />
+          <LoginBox goToHome={true} />
           <h1 onClick={hideLogin}>X</h1>
         </div>
       )}

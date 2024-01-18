@@ -15,8 +15,8 @@ export default function SearchPool() {
 
   const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // window.open(`/pools?location=${location}`)
-    redirect(`/pools?location=${location}`)
+    window.location.href =
+      window.location.origin + `/pools?location=${location}`
   }
 
   return (
