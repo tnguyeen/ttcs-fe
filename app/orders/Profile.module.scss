@@ -66,7 +66,12 @@
   height: 240px;
   display: flex;
   align-items: center;
+  cursor: pointer;
+  transition: 0.3s;
   justify-content: center;
+  &:hover {
+    transform: translateY(-10px);
+  }
   .main {
     height: 200px;
     width: 380px;

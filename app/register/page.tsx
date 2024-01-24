@@ -77,9 +77,6 @@ export default function Register() {
   }
   return (
     <>
-      <Head>
-        <title>Register</title>
-      </Head>
       <div className={styles.wrapper}>
         <div className={styles.slogan}>
           <h1>Aquarius</h1>
@@ -92,7 +89,7 @@ export default function Register() {
           </h3>
         </div>
         <div className={styles.registerForm}>
-          <h2>Please Fill out form to Register!</h2>
+          <h2>Vui lòng điền thông tin để đăng kí tài khoản!</h2>
           <form
             onSubmit={submitForm}
             encType="multipart/form-data"
@@ -199,12 +196,12 @@ export default function Register() {
             />
           </form>
           <div>
-            Yes I have an account
+            Tôi đã có tài khoản ?
             <span
               style={{ marginLeft: 4, cursor: "pointer" }}
               onClick={showLogin}
             >
-              <strong>Log in</strong>
+              <strong>Đăng nhập</strong>
             </span>
           </div>
           <div className={styles.social}></div>

@@ -8,6 +8,7 @@ import { Provider } from "react-redux"
 import { PersistGate } from "redux-persist/integration/react"
 
 import { store, persistor } from "../state/store"
+import Head from "next/head"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -22,36 +23,38 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body
-        className={inter.className}
-        style={{ backgroundColor: "rgb(245, 245, 245)" }}
-      >
-        <Provider store={store}>
-          <PersistGate persistor={persistor} loading={null}>
-            <div
-              style={{
-                marginTop: 100,
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
+    <>
+      <head><title>Aquarius</title></head>
+      <html lang="en">
+        <body
+          className={inter.className}
+          style={{ backgroundColor: "rgb(242, 242, 242)" }}
+        >
+          <Provider store={store}>
+            <PersistGate persistor={persistor} loading={null}>
               <div
                 style={{
-                  height: "100%",
-                  width: "100%",
-                  maxWidth: "1440px",
-                  marginTop: "50px",
+                  marginTop: 100,
+                  display: "flex",
+                  justifyContent: "center",
                 }}
               >
-                <Header />
-                {children}
-                <Footer />
+                <div
+                  style={{
+                    height: "100%",
+                    width: "100%",
+                    maxWidth: "1440px",
+                    marginTop: "50px",
+                  }}
+                >
+                  <Header />
+                  {children}
+                  <Footer />
+                </div>
               </div>
-            </div>
-          </PersistGate>
-        </Provider>
-      </body>
-    </html>
+            </PersistGate>
+          </Provider>
+        </body>
+      </html></>
   )
 }

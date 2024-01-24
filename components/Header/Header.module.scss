@@ -83,7 +83,6 @@
               cursor: pointer;
               border-radius: 6px;
               margin-bottom: 8px;
-              padding: 10px 20px;
               transition-duration: 0.3s;
               display: flex;
               align-items: center;
@@ -92,6 +91,10 @@
               }
               a {
                 color: black;
+                width: 100%;
+                padding: 10px 20px;
+                width: 100%;
+                // background-color: red;
               }
             }
           }

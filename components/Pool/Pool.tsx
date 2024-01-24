@@ -63,7 +63,7 @@ export default function Pool({
         <Link href={`/pools/${id}`} className={styles.name}>
           <Image
             className={styles.pic}
-            src={`https://froakie.io.vn/assets/` + images}
+            src={`${api}/assets/` + images}
             alt="pic"
             height={184}
             width={240}
@@ -106,7 +106,7 @@ export default function Pool({
       <div className={styles.wrapper}>
         <Image
           className={styles.pic}
-          src={`https://froakie.io.vn/assets/` + images}
+          src={`${api}/assets/` + images}
           alt="pic"
           height={290}
           width={300}

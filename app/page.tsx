@@ -21,11 +21,8 @@ export default function Home() {
   }, [])
   return (
     <>
-      <Head>
-        <title>aaaa22</title>
-      </Head>
       <div className={styles.wrapper}>
-        <SearchPool />
+        <SearchPool placeholder="" />
         <div className={styles.poolsSec}>
           <h2>Phổ biến</h2>
           <div className={styles.pools}>

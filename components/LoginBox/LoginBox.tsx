@@ -13,6 +13,7 @@ type OrderProp = {
   goToHome?: boolean
 }
 
+
 export default function LoginBox({ goToHome=false }: OrderProp) {
   const [usernameValue, setUsernameValue] = useState<string>("")
   const [passwordValue, setPasswordValue] = useState<string>("")
@@ -69,33 +70,38 @@ export default function LoginBox({ goToHome=false }: OrderProp) {
   }
 
   return (
-    <div className={styles.wrapper}>
+    <><div className={styles.wrapper}>
       <div className={styles.registerForm}>
         <form onSubmit={submitForm}>
+          <h2>Đăng nhập</h2>
           <div>
-            <label htmlFor="username">Email</label>
+            <label htmlFor="username">Địa chỉ email</label>
             <br />
             <input
               type="email"
+              placeholder="Vui lòng nhập "
               name="username"
               id="username"
               ref={inputUsername}
               onChange={changeHandler}
               value={usernameValue}
+              style={{marginBottom:'20px'}}
               required
             />
           </div>
 
           <div>
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Mật khẩu</label>
             <br />
             <input
               type="password"
+              placeholder="Vui lòng nhập "
               name="password"
               id="password"
               ref={inputPassword}
               onChange={changeHandler}
               value={passwordValue}
+              style={{marginBottom:'20px'}}
               required
               minLength={4}
               maxLength={20}
@@ -105,11 +111,11 @@ export default function LoginBox({ goToHome=false }: OrderProp) {
           <Button
             type={ButtonType.submit}
             btnStyle={ButtonStyle.primary}
-            content="Log in"
+            content="Đăng nhập"
           />
         </form>
         <div style={{ marginTop: 10, textAlign: "center" }}>
-          Dont have an account
+          Chưa có tài khoản ? 
           <Link
             href="/register"
             style={{
@@ -118,14 +124,14 @@ export default function LoginBox({ goToHome=false }: OrderProp) {
               color: "black",
             }}
           >
-            <strong>Register</strong>
+            <strong>Đăng kí</strong>
           </Link>
         </div>
         <div className={styles.social}></div>
       </div>
-      <span style={{ cursor: "pointer" }} onClick={loginGoogle}>
+      {/* <span style={{ cursor: "pointer" }} onClick={loginGoogle}>
         Or continue with Google
-      </span>
-    </div>
+      </span> */}
+    </div></>
   )
 }

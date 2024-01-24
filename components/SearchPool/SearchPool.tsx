@@ -5,8 +5,8 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"
 import styles from "./SearchPool.module.scss"
 import { redirect } from "next/navigation"
 
-export default function SearchPool() {
-  const [location, setLocation] = useState<string>("")
+export default function SearchPool({placeholder}:{placeholder : string}) {
+  const [location, setLocation] = useState<string>(placeholder)
   const inputLocation = useRef<HTMLInputElement>(null)
 
   const changeHandler = () => {
@@ -26,7 +26,7 @@ export default function SearchPool() {
           type="text"
           name="location"
           id="location"
-          placeholder="Tìm kiếm"
+          placeholder={placeholder  || "Tìm kiếm"}
           ref={inputLocation}
           onChange={changeHandler}
           value={location}
