@@ -71,9 +71,10 @@
     border-bottom: 2px solid black;
   }
   .detail {
-    height: 660px;
+    // height: 600px;
     display: flex;
     justify-content: space-between;
+    // align-items: center;
     & > div {
       height: 100%;
     }
@@ -86,11 +87,13 @@
       & > div {
         width: 100%;
         padding: 20px 60px;
+        margin: 0;
         border: 1px solid #158ac7;
         border-radius: 20px;
         background-color: white;
       }
       .tren {
+        margin-bottom: 30px;
         ul {
           li {
             margin: 20px 0;
@@ -109,6 +112,7 @@
     .phai {
       display: flex;
       justify-content: center;
+      height: auto;
       .main {
         width: 440px;
         height: 100%;

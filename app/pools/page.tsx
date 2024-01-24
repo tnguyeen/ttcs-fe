@@ -105,7 +105,7 @@ export default function Pools() {
   }
 
   useEffect(() => {
-    console.log(finalReq())
+    console.log(searchParam.get("location"))
 
     axios(`${api}/pool?${finalReq()}`)
       .then((res) => {
@@ -131,16 +131,16 @@ export default function Pools() {
   return (
     <>
       <div className={styles.wrapper}>
-        <SearchPool />
+        <SearchPool placeholder={searchParam.get("location") || ""} />
         <div className={styles.main}>
           <div className={styles.mainHeader}>
             <Link href="/" color="#22BFEA">
               Trang chủ
             </Link>
             <span>{`  >  `}</span>
-            <Link href="/pools" className={styles.mainHref}>
+            <Link href="" className={styles.mainHref}>
               {" "}
-              Các hồ bơi trên Hà Nội
+              Danh sách hồ bơi
             </Link>
           </div>
           {false && <span style={{ margin: "10px" }}>{330} địa điểm</span>}

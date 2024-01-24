@@ -33,6 +33,9 @@ export default function Header() {
 
   const showLogin = () => {
     setLogin(true)
+    // tesst()
+    // console.log(tesst());
+    
   }
   const hideLogin = () => {
     setLogin(false)
@@ -51,7 +54,9 @@ export default function Header() {
 
   useOnClickOutside(optionBox, handleClickOutsideOption)
   useEffect(() => {
-    axios
+    if(userLog){
+
+      axios
       .get(`${api}/users/me`, {
         headers: {
           Authorization: "Bearer " + userLog,
@@ -62,6 +67,7 @@ export default function Header() {
         setUseremail(res.data.data.email)
       })
       .catch((err) => err)
+    }
   }, [userLog])
   return (
     <>
@@ -71,7 +77,7 @@ export default function Header() {
             <Image src={Logo} alt="logo" height={70} />
           </Link>
           <div className={styles.navbar}>
-            <Button btnStyle={ButtonStyle.secondary} content="Phổ biến" />
+            {/* <Button btnStyle={ButtonStyle.secondary} content="Phổ biến" /> */}
           </div>
           <div className={styles.loginHeaderWrapper}>
             {userLog ? (
@@ -111,6 +117,7 @@ export default function Header() {
                           setOption(false)
                           logOut()
                         }}
+                        style={{padding:'10px 20px'}}
                       >
                         Đăng xuất
                       </li>

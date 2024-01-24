@@ -16,6 +16,7 @@ import Button, {
   ButtonStyle,
   ButtonType,
 } from "@/components/Button/Button"
+import Swal from "sweetalert2"
 
 interface UserModel {
   id: string
@@ -38,13 +39,20 @@ export default function Profile() {
         },
       })
       .then((res) => setUser(res.data.data))
-      .catch((err) => console.log(err))
+      .catch((err) => {
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: 'Không tìm thấy thông tin cá nhân!',
+          footer: '<a href="/">Trở về trang chủ</a>',
+        })
+      })
   }, [token])
   if (!user) {
     // window.location.href = window.location.origin
     return
   }
-  
+
   return (
     <>
       <div className={styles.wrapper}>
@@ -68,12 +76,18 @@ export default function Profile() {
           </div>
           <div>
             <h3 style={{ width: "200px" }}>Mật khẩu:</h3>
-            <span style={{ flex: "auto" }}>{user?.email}</span>
+            <span style={{ flex: "auto" }}>{user?.password}</span>
             <Button btnStyle={ButtonStyle.secondary} content="Thay đổi" />
           </div>
           <div>
-            <h3 style={{ width: "100px", color: "white" }}>
-              <Link style={{ color: "black" }} href="/orders">
+            <h3 style={{ width: "400px" }}>
+              <Link
+                style={{
+                  color: "black",
+                  padding: "0 180px 0 0",
+                }}
+                href="/orders"
+              >
                 Vé đã đặt
               </Link>
             </h3>
@@ -82,14 +96,14 @@ export default function Profile() {
         <div className={styles.sec3}>
           <div>
             <h3 style={{ color: "white" }}>
-              <Link style={{ color: "black" }} href="/orders">
+              <Link style={{ color: "black" }} href="/">
                 Trợ giúp và hỗ trợ
               </Link>
             </h3>
           </div>
           <div>
             <h3 style={{ color: "white" }}>
-              <Link style={{ color: "black" }} href="/orders">
+              <Link style={{ color: "black" }} href="/">
                 Điểu khoản và chính sách
               </Link>
             </h3>

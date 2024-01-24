@@ -20,7 +20,6 @@ export default function Verify() {
   const searchParam = useSearchParams()
 
   useEffect(() => {
-    console.log(searchParam.get("token"))
     axios
       .post(`${api}/users/activate`, {
         token: searchParam.get("token"),
@@ -40,15 +39,21 @@ export default function Verify() {
   }, [])
 
   return (
+    <>
     <div
       style={{
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        flexDirection:'column',
         height: "54vh",
       }}
-    >
+      >
       <span className={styles.loader}></span>
+      <p style={
+        {marginTop:'70px'}
+      }>Đang xác thực</p>
     </div>
+      </>
   )
 }

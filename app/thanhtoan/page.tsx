@@ -13,37 +13,10 @@ import { useSelector } from "react-redux"
 
 interface PoolModel {
   id: number
-  status: string
-  sort: string
-  user_created: string
-  date_created: string
-  user_updated: string
-  date_updated: string
   name: string
-  host_id: string
-  longtitude: number
-  latitude: number
   location: string
-  rentable: false
-  opening_time: number
-  closing_time: number
-  description: string
-  rating: number
-  location_searching: string
-  pools: [
-    {
+  pools: Array<{
       id: number
-      status: string
-      sort: string
-      user_created: string
-      date_created: string
-      user_updated: string
-      date_updated: string
-      depth: number
-      length: number
-      width: number
-      quantity: number
-      description: string
       guest_type: string
       capacity: number
       pool_id: number
@@ -55,90 +28,15 @@ interface PoolModel {
           directus_files_id: string
         }
       ]
-    },
-    {
+    }>
+  tickets: Array<{
       id: number
-      status: string
-      sort: string
-      user_created: string
-      date_created: string
-      user_updated: null
-      date_updated: null
-      depth: number
-      length: number
-      width: number
-      quantity: number
-      description: string
-      guest_type: string
-      capacity: number
-      pool_id: number
-      name: string
-      images: [
-        {
-          id: number
-          pool_detail_id: number
-          directus_files_id: string
-        }
-      ]
-    }
-  ]
-  images: [
-    {
-      id: number
-      pool_id: number
-      directus_files_id: string
-    }
-  ]
-  services: [
-    {
-      service_id: {
-        name: string
-      }
-    },
-    {
-      service_id: {
-        name: string
-      }
-    },
-    {
-      service_id: {
-        name: string
-      }
-    }
-  ]
-  orders: [1]
-  tickets: [
-    {
-      id: number
-      status: string
-      sort: string
-      user_created: string
-      date_created: string
-      user_updated: string
-      date_updated: string
       pool_id: number
       ticket_type: string
       ticket_name: string
       price: number
       total_ticket: number
-      ticket_remain: number
-    },
-    {
-      id: number
-      status: string
-      sort: string
-      user_created: string
-      date_created: string
-      user_updated: string
-      ticket_name: string
-      date_updated: string
-      pool_id: number
-      ticket_type: string
-      price: number
-      total_ticket: number
-      ticket_remain: number
-    }
-  ]
+    }>
   reviews: []
 }
 
@@ -173,7 +71,6 @@ export default function Thanhtoan() {
       })
       return
     }
-
     if (name === "") {
       Swal.fire({
         // title: "The Internet?",
@@ -279,6 +176,7 @@ export default function Thanhtoan() {
   }, [])
 
   return (
+    <>
     <div className={styles.wrapper}>
       <div className={styles.mainHeader}>
         <Link href="/" color="#22BFEA">
@@ -373,6 +271,6 @@ export default function Thanhtoan() {
           func={handleSubmit}
         />
       </div>
-    </div>
+    </div></>
   )
 }

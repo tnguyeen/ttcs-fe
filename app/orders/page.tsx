@@ -12,6 +12,7 @@ import { useSearchParams } from "next/navigation"
 import { useSelector } from "react-redux"
 import defava from "./defava.jpg"
 import Button, { ButtonStyle } from "@/components/Button/Button"
+import Swal from "sweetalert2"
 
 interface UserModel {
   id: string
@@ -50,7 +51,7 @@ function formatDate(initdate: string, full: boolean) {
   var date = new Date(initdate)
   var hours = date.getHours()
   hours = hours ? hours : 24 // the hour '0' should be '12'
-  var strTime = full ? hours + "h  Ngày:" : ""
+  var strTime = full ? hours + "giờ  Ngày:" : ""
   return (
     strTime +
     date.getDate() +
@@ -94,7 +95,14 @@ export default function Profile() {
         setOrders(res.data.data)
         setDisplayOrders(res.data.data)
       })
-      .catch((err) => console.log(err))
+      .catch((err) => {
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: 'Đã có lỗi xảy ra.',
+          footer: '<a href="/">Trở về trang chủ</a>',
+        })
+      })
   }, [token])
 
   if (!user) {

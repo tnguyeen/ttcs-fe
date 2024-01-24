@@ -26,15 +26,16 @@ import SugPool from "@/components/Pool/Pool"
 import api from "@/api"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
-import GoogleMapReact from "google-map-react"
 import { Rating } from "react-simple-star-rating"
 import {
   APIProvider,
   Map,
   useMapsLibrary,
   Marker,
+  AdvancedMarker,
+  Pin,
+  InfoWindow,
 } from "@vis.gl/react-google-maps"
-import Head from "next/head"
 
 //data
 
@@ -194,12 +195,6 @@ function iconService(name: string): IconDefinition {
   }
   return iconR
 }
-function parseHtml(str: string) {
-  const parser = new DOMParser()
-  const doc3 = parser.parseFromString(str, "text/xml")
-  console.log(doc3)
-  return doc3.documentElement.textContent
-}
 
 //main export
 export default function Pool({ params }: { params: { id: string } }) {
@@ -214,8 +209,6 @@ export default function Pool({ params }: { params: { id: string } }) {
   const [numAdult, setNumAdult] = useState<number>(0)
   const [numChild, setNumChild] = useState<number>(0)
 
-  const position = { lat: 53.54, lng: 10 }
-  const geocodingLibrary = useMapsLibrary("geocoding")
 
   const router = useRouter()
 
@@ -235,21 +228,9 @@ export default function Pool({ params }: { params: { id: string } }) {
   }
   function handleThanhtoan() {
     if (!pool) return
-
-    let data = `/thanhtoan?na=${numAdult}&nc=${numChild}&p_id=${
-      pool!.id
-    }&date=${date}`
+    let data = `/thanhtoan?na=${numAdult}&nc=${numChild}&p_id=${pool!.id
+      }&date=${date}`
     router.push(data)
-  }
-  function getCookie(cName: string) {
-    const name = cName + "="
-    const cDecoded = decodeURIComponent(document.cookie) //to be careful
-    const cArr = cDecoded.split("; ")
-    let res
-    cArr.forEach((val) => {
-      if (val.indexOf(name) === 0) res = val.substring(name.length)
-    })
-    return res
   }
 
   useEffect(() => {
@@ -257,33 +238,27 @@ export default function Pool({ params }: { params: { id: string } }) {
       .then((res) => {
         setPool(res.data.data)
         return axios.get(
-          `${api}/pool?service=1,2,3&location=${
-            res.data.data.location.split(",")[1]
+          `${api}/pool?limit=3&location=${res.data.data.location_searching.split(",").pop()
           }`
         )
       })
       .then((res) => {
-        setSuggestPool(res.data.data)
+        setSuggestPool(res.data.data.filter((e: PoolModel) => e.id != Number(params.id)))
       })
       .catch((err) => {
         Swal.fire({
           icon: "error",
-          title: "Oops...",
-          text: err.response.data.message,
+          title: "Lỗi",
+          text: 'Không tồn tại bể bơi này',
           footer: '<a href="/">Trở về trang chủ</a>',
         })
       })
   }, [params.id])
 
-  // useEffect(() => {
-  //   if (!geocodingLibrary) return
-
-  //   const geocoder = new geocodingLibrary.Geocoder()
-  //   // ...
-  // }, [geocodingLibrary])
+  const positionGerman = { lat: 53.54, lng: 10 }
+  const positionVietnam = { lat: 96.80, lng: 21.00 }
 
   if (!pool) {
-    // window.location.href = window.location.origin
     return
   }
 
@@ -299,10 +274,10 @@ export default function Pool({ params }: { params: { id: string } }) {
             />
             <p>Chia sẻ</p>
           </div>
-          <div className={styles.save}>
+          {/* <div className={styles.save}>
             <FontAwesomeIcon icon={faHeart} className={styles.btnHeaderIcon} />
             <p>Lưu</p>
-          </div>
+          </div> */}
         </div>
         <div className={styles.detailWrapper}>
           <PoolPics />
@@ -322,16 +297,15 @@ export default function Pool({ params }: { params: { id: string } }) {
                       icon={faDotCircle}
                       className={styles.listIcon}
                     />
-                    {`Giá vé:  ${
-                      pool.tickets[0] &&
+                    {`Giá vé:  ${pool.tickets[0] &&
                       pool.tickets[0].ticket_name +
-                        " " +
-                        VND.format(pool.tickets[0].price)
-                    } /người` +
+                      " " +
+                      VND.format(pool.tickets[0].price)
+                      } /người` +
                       (pool.tickets[1]
                         ? `, ${pool.tickets[1].ticket_name} ${VND.format(
-                            pool.tickets[1].price
-                          )}/người`
+                          pool.tickets[1].price
+                        )}/người`
                         : "")}
                   </li>
                   <li>
@@ -339,14 +313,14 @@ export default function Pool({ params }: { params: { id: string } }) {
                       icon={faDotCircle}
                       className={styles.listIcon}
                     />
-                    {`Giờ mở cửa: ${pool.opening_time}h - ${pool.closing_time}h`}
+                    {`Giờ mở cửa: ${pool.opening_time} giờ - ${pool.closing_time} giờ`}
                   </li>
                 </ul>
               </div>
               <div className={styles.duoi}>
                 <h2>{pool.name}</h2>
-                <div>{parseHtml(pool.description)}</div>
-                <span>Hiển thị thêm...</span>
+                <div>{(pool.description)}</div>
+                {/* <span>Hiển thị thêm...</span> */}
               </div>
             </div>
             <div className={styles.phai}>
@@ -395,16 +369,11 @@ export default function Pool({ params }: { params: { id: string } }) {
                   content="Đặt vé ngày"
                   priceForTicket={
                     (pool.tickets[0] && pool.tickets[0].price * numAdult) +
-                      (pool.tickets[1]
-                        ? pool.tickets[1].price * numChild
-                        : 0) || true
+                    (pool.tickets[1]
+                      ? pool.tickets[1].price * numChild
+                      : 0) || true
                   }
                   func={handleThanhtoan}
-                />
-                <Button
-                  btnStyle={ButtonStyle.primary}
-                  content="Đặt vé tháng"
-                  priceForTicket={2000000}
                 />
               </div>
             </div>
@@ -451,37 +420,19 @@ export default function Pool({ params }: { params: { id: string } }) {
           )}
           <div className={styles.map}>
             <h2 style={{ marginBottom: "20px" }}>Nơi bạn sẽ đến</h2>
-            {/* <APIProvider apiKey="AIzaSyApZGB7UJRujOnfvwOrVE1-PfPA6ky4gvE">
-              <div style={{ height: "400px", width: "100%" }}>
-                <Map
-                  zoom={9}
-                  center={position}
-                  gestureHandling={"greedy"}
-                  disableDefaultUI={true}
-                />
-              </div>
-            </APIProvider> */}
-            {/* <div style={{ height: "400px", width: "100%" }}>
-              <GoogleMapReact
-                bootstrapURLKeys={{
-                  key: "AIzaSyApZGB7UJRujOnfvwOrVE1-PfPA6ky4gvE",
-                }}
-                defaultCenter={{
-                  lat: 10.99835602,
-                  lng: 77.01502627,
-                }}
-                defaultZoom={11}
-              ></GoogleMapReact>
-            </div> */}
-            <APIProvider apiKey="AIzaSyApZGB7UJRujOnfvwOrVE1-PfPA6ky4gvE">
-              <div style={{ height: "100vh", width: "100%" }}>
-                <Map zoom={9} center={position}>
-                  <Marker position={position}></Marker>
+            <APIProvider apiKey="AIzaSyBn0yJJBYv2wI7aFT5I9u7CrVtxgsKVMTw">
+              <div style={{ height: "500px", width: "100%" }}>
+                <Map zoom={9} center={positionGerman}>
+                  <Marker position={positionGerman}>
+
+                  </Marker>
+                  {/* <InfoWindow position={positionGerman}  >
+                    <div style={{ width: '100px', height: '100px' }}>
+                      {pool.location}
+                    </div>
+                  </InfoWindow> */}
                 </Map>
               </div>
-            </APIProvider>
-            <APIProvider apiKey="AIzaSyApZGB7UJRujOnfvwOrVE1-PfPA6ky4gvE">
-              <Geocoding />
             </APIProvider>
           </div>
           <div className={styles.danhgia}>
@@ -491,14 +442,14 @@ export default function Pool({ params }: { params: { id: string } }) {
               allowFraction
               disableFillHover={true}
               allowHover={false}
-              /* Available Props */
+            /* Available Props */
             />
             <h2 style={{ marginLeft: "20px" }}>{pool.rating} trên 5</h2>
           </div>
           {/* <div className={styles.binhluan}></div> */}
         </div>
         <div className={styles.suggest}>
-          <h2 style={{ marginRight: "20px" }}>Bể bơi lân cận</h2>
+          <h2 style={{ margin: "20px" }}>Bể bơi lân cận</h2>
           <div className={styles.pkhucElements}>
             {suggestPool.map((e, i) => {
               return (
