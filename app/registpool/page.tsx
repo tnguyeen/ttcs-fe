@@ -76,16 +76,27 @@ export default function RegistPool() {
   }
   function handleBtnPanel2(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    console.log('tab 2');
-    console.log(files);
+    if (Array.from(files).length < 5) {
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: 'Vui lòng chọn đủ 5 ảnh cho bể bơi',
+        confirmButtonText: 'Xác nhận',
+      }).then(function (result) {
+        if (result.value) {
+          // console.log(33);
+
+        }
+      })
+    }
 
   }
   const handleFileChange = (event: any) => {
     setFiles(event.target.files);
   };
-  const removeFile = (event: any) => {
-    console.log(3333);
-
+  const removeFile = (file: File) => {
+    const updatedFiles = Array.from(files).filter((f) => f !== file);
+    setFiles(updatedFiles);
   };
 
 
@@ -161,8 +172,11 @@ export default function RegistPool() {
                 <div className={styles.imgsPreview}>
                   {files && Array.from(files).map((e, i) => {
                     return <div className={styles.image}>
-                      <span>{e.name.split('.')[0]}</span>
-                      <div onClick={removeFile}>
+                      <section>
+                        <img src={URL.createObjectURL(e)} height={50} />
+                        <span>{e.name.split('.')[0]}</span>
+                      </section>
+                      <div onClick={() => { removeFile(e) }}>
                         <FontAwesomeIcon icon={faXmark} />
                       </div>
                     </div>

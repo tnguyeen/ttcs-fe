@@ -209,6 +209,8 @@ export default function Pool({ params }: { params: { id: string } }) {
   const [numAdult, setNumAdult] = useState<number>(0)
   const [numChild, setNumChild] = useState<number>(0)
 
+  const [showinfoLocation, setShowinfoLocation] = useState(false);
+
 
   const router = useRouter()
 
@@ -254,9 +256,6 @@ export default function Pool({ params }: { params: { id: string } }) {
         })
       })
   }, [params.id])
-
-  const positionGerman = { lat: 53.54, lng: 10 }
-  const positionVietnam = { lat: 21.00, lng: 105.53 }
 
   if (!pool) {
     return
@@ -420,17 +419,18 @@ export default function Pool({ params }: { params: { id: string } }) {
           )}
           <div className={styles.map}>
             <h2 style={{ marginBottom: "20px" }}>Nơi bạn sẽ đến</h2>
-            <APIProvider apiKey="aaaaaaaaaaaaaaa">
-              <div style={{ height: "500px", width: "100%" }}>
-                <Map zoom={9} center={positionVietnam}>
-                  <Marker position={positionVietnam}>
+            <APIProvider apiKey="aaaaaaaaaaaaaa">
+              <div style={{ height: "700px", width: "100%" }}>
+                <Map zoom={15} center={{ lat: pool.latitude, lng: pool.longtitude }}>
+                  <Marker position={{ lat: pool.latitude, lng: pool.longtitude }} onClick={() => setShowinfoLocation(true)}>
 
                   </Marker>
-                  {/* <InfoWindow position={positionGerman}  >
-                    <div style={{ width: '100px', height: '100px' }}>
-                      {pool.location}
+                  {showinfoLocation && <InfoWindow position={{ lat: pool.latitude + 0.0018, lng: pool.longtitude }} onCloseClick={() => setShowinfoLocation(false)} >
+                    <div style={{ width: '160px', height: '100px' }}>
+                      <p style={{ fontSize: '16px' }}>{pool.name}</p><br />
+                      {pool.location.split(',').map(e => <><span>{e}</span><br /></>)}
                     </div>
-                  </InfoWindow> */}
+                  </InfoWindow>}
                 </Map>
               </div>
             </APIProvider>
@@ -496,41 +496,6 @@ function PoolPics() {
       {active && (
         <Slider handleClose={handleClose} index={current} imgs={Imgs} />
       )}
-    </div>
-  )
-}
-
-function Geocoding() {
-  const geocodingApiLoaded = useMapsLibrary("geocoding")
-  const [geocodingService, setGeocodingService] =
-    useState<google.maps.Geocoder>()
-  const [geocodingResult, setGeocodingResult] =
-    useState<google.maps.GeocoderResult>()
-  const [address, _setAddress] = useState("10 Front St, Toronto")
-
-  useEffect(() => {
-    if (!geocodingApiLoaded) return
-    setGeocodingService(new window.google.maps.Geocoder())
-  }, [geocodingApiLoaded])
-
-  useEffect(() => {
-    if (!geocodingService || !address) return
-
-    geocodingService.geocode({ address }, (results, status) => {
-      if (results && status === "OK") {
-        setGeocodingResult(results[0])
-      }
-    })
-  }, [geocodingService, address])
-
-  if (!geocodingService) return <div>Loading...</div>
-  if (!geocodingResult) return <div>Geocoding...</div>
-
-  return (
-    <div>
-      <h1>{geocodingResult.formatted_address}</h1>
-      <p>Latitude: {geocodingResult.geometry.location.lat()}</p>
-      <p>Longitude: {geocodingResult.geometry.location.lng()}</p>
     </div>
   )
 }
