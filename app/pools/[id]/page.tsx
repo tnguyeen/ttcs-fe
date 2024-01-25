@@ -419,7 +419,7 @@ export default function Pool({ params }: { params: { id: string } }) {
           )}
           <div className={styles.map}>
             <h2 style={{ marginBottom: "20px" }}>Nơi bạn sẽ đến</h2>
-            <APIProvider apiKey="aaaaaaaaaaaaaa">
+            <APIProvider apiKey={process.env.GG_API_KEY!}>
               <div style={{ height: "700px", width: "100%" }}>
                 <Map zoom={15} center={{ lat: pool.latitude, lng: pool.longtitude }}>
                   <Marker position={{ lat: pool.latitude, lng: pool.longtitude }} onClick={() => setShowinfoLocation(true)}>
