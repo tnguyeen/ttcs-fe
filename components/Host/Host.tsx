@@ -17,7 +17,7 @@ export default function Host() {
           <Button
             type={ButtonType.button}
             btnStyle={ButtonStyle.primary}
-            content="Đăng ký"
+            content="Tạo bể bơi"
             func={() => { location.href = '/registpool' }}
           />
         </div>

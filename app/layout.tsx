@@ -24,7 +24,13 @@ export default function RootLayout({
 }) {
   return (
     <>
-      <head><title>Aquarius</title></head>
+      <head>
+        <title>Aquarius</title>
+        <script
+          defer
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GG_API_KEY}&libraries=places&callback=YOUR_CALLBACK_NAME`}
+        ></script>
+      </head>
       <html lang="en">
         <body
           className={inter.className}

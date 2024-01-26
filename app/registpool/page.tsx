@@ -3,25 +3,44 @@ import Head from "next/head"
 import Image from "next/image"
 import styles from "./RegistPool.module.scss"
 import Router from "next/router"
-import { useEffect, useRef, useState } from "react"
+import { LegacyRef, RefObject, useEffect, useRef, useState } from "react"
 import Swal from "sweetalert2"
 import Button, { ButtonStyle, ButtonType } from "@/components/Button/Button"
 import { useSearchParams } from "next/navigation"
 import axios from "axios"
 import api from "@/api"
 import Link from "next/link"
+import Select from 'react-select'
 import { useSelector } from "react-redux"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faLocationDot, faImage, faCircleInfo, faCheckDouble, faTicket, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { faLocationDot, faImage, faCircleInfo, faCheckDouble, faTicket, faXmark, faPlus } from "@fortawesome/free-solid-svg-icons"
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { IconProp } from "@fortawesome/fontawesome-svg-core"
+import {
+  APIProvider,
+  Map,
+  useMapsLibrary,
+  Marker,
+  AdvancedMarker,
+  Pin,
+  InfoWindow,
+} from "@vis.gl/react-google-maps"
+import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete"
+import { useOnClickOutside } from "usehooks-ts"
+
 
 
 interface TabModel {
   icon: IconProp
   name: string
 }
-
+interface ticketType {
+  name: string
+  depth: number
+  length: number
+  width: number
+  price: number
+}
 const dataTabList: Array<TabModel> = [
   { icon: faCircleInfo, name: "Mô tả" },
   { icon: faImage, name: "Thêm ảnh" },
@@ -29,7 +48,10 @@ const dataTabList: Array<TabModel> = [
   { icon: faTicket, name: "Vé" },
   { icon: faCheckDouble, name: "Dịch vụ" },
 ]
-
+const options = [
+  { value: 'ADULT', label: 'Vé dành cho người lớn' },
+  { value: 'CHILD', label: 'Vé dành cho trẻ em' }
+]
 function checkHour(hour: number) {
   if (hour < 24 && hour > 0) {
     return true
@@ -42,15 +64,88 @@ function checkHour(hour: number) {
 
 export default function RegistPool() {
   const token = useSelector((state: any) => state.token)
-  const [selectedTab, setSelectedTab] = useState(1)
-
+  const [selectedTab, setSelectedTab] = useState(4)
+  // Panel 1
   const [poolname, setPoolname] = useState<string>("")
   const [pooldes, setPooldes] = useState<string>("")
   const [poolopenT, setPoolopenT] = useState<number>(5)
   const [poolcloseT, setPoolcloseT] = useState<number>(19)
-
+  // Panel 2
   const [files, setFiles] = useState<Array<any>>([]);
   const inputPic = useRef<HTMLInputElement>(null)
+  const handleFileChange = (event: any) => {
+    setFiles(event.target.files);
+  };
+  const removeFile = (file: File) => {
+    const updatedFiles = Array.from(files).filter((f) => f !== file);
+    setFiles(updatedFiles);
+  };
+  // Panel 3
+  const [geocoding, setGeocoding] = useState({ lat: 21.0277644, lng: 105.8341598 })
+  const [zoom, setZoom] = useState<number>(6)
+  const {
+    ready,
+    value,
+    suggestions: { status, data },
+    setValue,
+    clearSuggestions,
+  } = usePlacesAutocomplete({
+    callbackName: "YOUR_CALLBACK_NAME",
+    requestOptions: {},
+    debounce: 300,
+  });
+  const handleSelect = ({ description }: { description: any }) =>
+    () => {
+      setValue(description, false);
+      clearSuggestions();
+      getGeocode({ address: description }).then((results) => {
+        const { lat, lng } = getLatLng(results[0]);
+        setGeocoding({ lat: lat, lng: lng })
+        setZoom(15)
+      });
+    };
+  const renderSuggestions = () =>
+    data.map((suggestion) => {
+      const {
+        place_id,
+        structured_formatting: { main_text, secondary_text },
+      } = suggestion;
+
+      return (
+        <li key={place_id} onClick={handleSelect(suggestion)}>
+          <strong > {main_text}</strong> <small>{secondary_text}</small>
+        </li>
+      );
+    });
+  // Panel 4 
+  const [arrayTickets, setArrayTickets] = useState<Array<ticketType>>([])
+  const [createBox, setCreateBox] = useState<boolean>(false)
+  function showCreateBox() {
+    setCreateBox(true)
+  }
+  function hideCreateBox() {
+    setCreateBox(false)
+  }
+  function removeTicket(ticket: ticketType, i: number) {
+    setArrayTickets(arrayTickets.splice(arrayTickets.indexOf(ticket), 1))
+  }
+  function addTicket(name: string, depth: number, length: number, width: number, price: number) {
+    var newTicket: ticketType = {
+      name: name,
+      depth: depth,
+      length: length,
+      width: width,
+      price: price
+    }
+    setArrayTickets(oldArray => [...oldArray, newTicket]);
+    setCreateBox(false)
+  }
+  // Panel 5
+  const [arrayService, setArrayService] = useState<Array<any>>([])
+  const [arrayResultService, setArrayResultService] = useState<Array<number>>([])
+
+
+
 
   function handleBtnPanel1(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -60,8 +155,8 @@ export default function RegistPool() {
         title: "Lỗi",
         text: 'Bạn cần nhập đủ các thông tin!',
       }).then(function (result) {
-        return
       })
+      return
     }
     if (!(checkHour(poolopenT) && checkHour(poolcloseT))) {
       Swal.fire({
@@ -69,8 +164,8 @@ export default function RegistPool() {
         title: "Lỗi",
         text: 'Phải nhập giờ trong khoảng 0-24!',
       }).then(function (result) {
-        return
       })
+      return
     }
     setSelectedTab(1)
   }
@@ -80,25 +175,49 @@ export default function RegistPool() {
       Swal.fire({
         icon: "error",
         title: "Lỗi",
-        text: 'Vui lòng chọn đủ 5 ảnh cho bể bơi',
+        text: 'Vui lòng chọn ít nhất 5 ảnh cho bể bơi',
         confirmButtonText: 'Xác nhận',
       }).then(function (result) {
         if (result.value) {
-          // console.log(33);
-
         }
       })
+      return
     }
-
+    setSelectedTab(2)
   }
-  const handleFileChange = (event: any) => {
-    setFiles(event.target.files);
-  };
-  const removeFile = (file: File) => {
-    const updatedFiles = Array.from(files).filter((f) => f !== file);
-    setFiles(updatedFiles);
-  };
-
+  function handleBtnPanel3() {
+    if (!value) {
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: 'Vui lòng điền vị trí bể bơi',
+        confirmButtonText: 'Xác nhận',
+      }).then(function (result) {
+        if (result.value) {
+        }
+      })
+      return
+    }
+    setSelectedTab(3)
+  }
+  function handleBtnPanel4() {
+    if (arrayTickets.length == 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: 'Vui lòng thêm ít nhất một vé!',
+        confirmButtonText: 'Xác nhận',
+      }).then(function (result) {
+        if (result.value) {
+        }
+      })
+      return
+    }
+    setSelectedTab(4)
+  }
+  function handleBtnPanel5() {
+    setSelectedTab(4)
+  }
 
   useEffect(() => {
     if (!token) {
@@ -113,14 +232,15 @@ export default function RegistPool() {
         }
       })
     }
+    axios.get(`${api}/items/service?fields=icon,name,code,id`).then(res => {
+      setArrayService(res.data.data)
+    }).catch(err => err)
   }, [])
-
-
 
   return (
     <>
       <div className={styles.wrapper}>
-        <div className={styles.mainHeader}>
+        <div className={styles.mainHeader} >
           <Link href="/" color="#22BFEA">
             Trang chủ
           </Link>
@@ -142,7 +262,6 @@ export default function RegistPool() {
                 )
               })}
             </TabList>
-
             <div className={styles.tabPanels}>
               <TabPanel className={styles.descriptionPanel + " " + styles.panel}>
                 <h2>Vui lòng điền thông tin chi tiết cho bể bơi</h2>
@@ -183,15 +302,62 @@ export default function RegistPool() {
                   })}
                 </div>
                 <form onSubmit={handleBtnPanel2}>
-                  <input type="file" multiple onChange={handleFileChange} ref={inputPic} style={{ display: 'none' }} />
+                  <input type="file" accept="image/png, image/jpeg" multiple onChange={handleFileChange} ref={inputPic} style={{ display: 'none' }} />
                   <Button content="Thêm ảnh" btnStyle={ButtonStyle.secondary} type={ButtonType.button} func={(e) => {
                     inputPic.current?.click()
                   }} />
                   <Button content="Tiếp tục" btnStyle={ButtonStyle.primary} />
                 </form>
               </TabPanel>
-              <TabPanel className={styles.descriptionPanel + " " + styles.panel}>
-                <h2>Any content 3</h2>
+              <TabPanel className={styles.locationPanel + " " + styles.panel}>
+                <h2>Điền vị trí bể bơi</h2>
+                <div>
+                  <input
+                    value={value}
+                    onChange={(e) => setValue(e.target.value)}
+                    placeholder="Tìm kiếm trên Google Maps"
+                  />
+                  {status === "OK" && <ul>{renderSuggestions()}</ul>}
+                </div>
+                <div>
+                  <APIProvider apiKey={process.env.NEXT_PUBLIC_GG_API_KEY!}>
+                    <div style={{ height: "700px", width: "100%" }}>
+                      <Map zoom={zoom} center={geocoding}>
+                        <Marker position={geocoding} draggable onDragEnd={(e) => { setGeocoding(e.latLng!.toJSON()) }}>
+                        </Marker>
+                      </Map>
+                    </div>
+                  </APIProvider>
+                </div>
+                <Button content="Tiếp tục" btnStyle={ButtonStyle.primary} func={handleBtnPanel3} />
+              </TabPanel>
+              <TabPanel className={styles.ticketPanel + " " + styles.panel}>
+                <h2>Các loại vé</h2>
+                {createBox && <CreateTicketBox func={addTicket} hide={hideCreateBox} />}
+                <div>
+                  {arrayTickets.map((e, i) => {
+                    return <Ticket ticket={e} func={removeTicket} i={i} />
+                  })}
+                  <CreateTicketBtn func={showCreateBox} />
+                </div>
+                <Button content="Tiếp tục" btnStyle={ButtonStyle.primary} func={handleBtnPanel4} />
+              </TabPanel>
+              <TabPanel className={styles.servicesPanel + " " + styles.panel}>
+                <h2>Các dịch vụ</h2>
+                <div>
+                  {arrayService.map((e, i) => {
+                    return (
+                      <section>
+                        <input type="checkbox" value={e.id} id={e.code} />
+                        <label htmlFor={e.code}>
+                          <p>{e.name}</p>
+                          <Image src={`${api}/assets/${e.icon}`} height={50} width={50} alt="" />
+                        </label>
+                      </section>
+                    )
+                  })}
+                </div>
+                <Button content="Hoafn Thanh" btnStyle={ButtonStyle.primary} func={handleBtnPanel5} />
               </TabPanel>
             </div>
           </Tabs>
@@ -201,3 +367,98 @@ export default function RegistPool() {
   )
 }
 
+function CreateTicketBtn({ func }: { func: Function }) {
+  return (
+    <>
+      <div className={styles.createTicket} onClick={e => func()} >
+        <FontAwesomeIcon icon={faPlus} size="2x" style={{ borderRadius: '50%', padding: '16px', border: '1px solid #00B2EB' }} />
+        <div className={styles.mainDes} >
+          {"Thêm vé"}
+        </div>
+      </div>
+    </>
+  )
+}
+function Ticket({ ticket, func, i }: { ticket: ticketType, func: Function, i: number }) {
+  function handleBtnRemove() {
+    func(ticket, i)
+  }
+  return (
+    <>
+      <div className={styles.ticket} onClick={e => func()} >
+        <FontAwesomeIcon icon={faTicket} size="2x" style={{ borderRadius: '50%', padding: '16px' }} />
+        <div className={styles.mainDes}>
+          <div >
+            <strong>{ticket.name}</strong><br /><small>{ticket.price}</small>
+          </div>
+          <div onClick={() => handleBtnRemove()}>
+            <FontAwesomeIcon icon={faXmark} size="2x" style={{ borderRadius: '50%', padding: '16px' }} />
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+function CreateTicketBox({ func, hide }: { func: Function, hide: Function }) {
+  const [Name, setName] = useState<string>()
+  const [Depth, setDepth] = useState<number>()
+  const [Length, setLength] = useState<number>()
+  const [Width, setWidth] = useState<number>()
+  const [Price, setPrice] = useState<number>()
+  function handleBtnPanel3() {
+    if (!Depth || !Length || !Width || !Price || !Name) {
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: 'Bạn cần nhập đủ các thông tin!',
+      }).then(function (result) {
+      })
+      return
+    }
+    func(Name, Depth, Length, Width, Price)
+  }
+
+
+  return (
+    <>
+      <section className={styles.createTicketBox}>
+        <div style={{ padding: '16px', top: '0', right: 0, position: 'absolute', cursor: 'pointer' }} onClick={e => hide()}>
+          <FontAwesomeIcon icon={faXmark} size="2x" />
+        </div>
+        <div>
+          <Select options={options} placeholder="Chọn loại vé" onChange={(value) => setName(value?.label)} />
+        </div>
+        <div>
+          <label htmlFor="depth">Độ sâu (m)</label>
+          <input type="number" id="depth" placeholder="Độ sâu" pattern="[0-9]+" value={Depth} onChange={e => setDepth(Number(e.target.value))} />
+        </div>
+        <div>
+          <label htmlFor="length">Chiều dài (m)</label>
+          <input type="number" id="length" placeholder="Chiều dài" pattern="[0-9]+" value={Length} onChange={e => setLength(Number(e.target.value))} />
+        </div>
+        <div>
+          <label htmlFor="width">Chiều rộng (m)</label>
+          <input type="number" id="width" placeholder="Chiều rộng" pattern="[0-9]+" value={Width} onChange={e => setWidth(Number(e.target.value))} />
+        </div>
+        <div>
+          <label htmlFor="price">Giá vé (VNĐ)</label>
+          <input type="number" id="price" placeholder="Giá vé" pattern="[0-9]+" value={Price} onChange={e => setPrice(Number(e.target.value))} />
+        </div>
+        <Button content="Thêm vé" btnStyle={ButtonStyle.primary} func={handleBtnPanel3} />
+      </section>
+      <section className={styles.backdrop} onClick={e => hide()}></section>
+    </>
+  )
+}
+
+function Service({ service }: { service: ticketType }) {
+  return (
+    <>
+      <div className={styles.ticket}>
+        <FontAwesomeIcon icon={faTicket} size="2x" style={{ borderRadius: '50%', padding: '16px' }} />
+        <div className={styles.mainDes}>
+        </div>
+      </div>
+    </>
+  )
+}
