@@ -1,6 +1,7 @@
 import Image, { StaticImageData } from "next/image"
 import styles from "./Main.module.scss"
 import { MouseEventHandler, useEffect, useRef, useState } from "react"
+import api from "@/api"
 
 enum Block {
   prev,
@@ -10,10 +11,10 @@ enum Block {
 interface SliderProps {
   handleClose: MouseEventHandler<HTMLButtonElement>
   index: number
-  imgs: Array<string | StaticImageData>
+  imgs: Array<string | StaticImageData | any>
 }
 interface SlideProps {
-  src: string | StaticImageData
+  src: string
 }
 interface ControllBtnProps {
   handlePrevClick: MouseEventHandler<HTMLButtonElement>
@@ -45,8 +46,8 @@ export default function Slider({ handleClose, index, imgs }: SliderProps) {
   return (
     <>
       <div className={styles.wrapper} style={wrapperTransform}>
-        {imgs.map((slide, i) => {
-          return <Slide src={slide} key={i} />
+        {imgs.map((img, i) => {
+          return <Slide src={`${api}/assets/${img.directus_files_id}`} key={i} />
         })}
       </div>
       <ControllBtn
@@ -62,7 +63,8 @@ export default function Slider({ handleClose, index, imgs }: SliderProps) {
 function Slide({ src }: SlideProps) {
   return (
     <div className={styles.slide}>
-      <Image alt="slide" src={src} className={styles.mainImg} />
+      {/* <Image alt="slide" src={src} className={styles.mainImg} width={600} height={89} /> */}
+      <img src={src!} className={styles.mainImg} alt="img" />
     </div>
   )
 }

@@ -13,7 +13,7 @@ import Link from "next/link"
 import Select from 'react-select'
 import { useSelector } from "react-redux"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faLocationDot, faImage, faCircleInfo, faCheckDouble, faTicket, faXmark, faPlus } from "@fortawesome/free-solid-svg-icons"
+import { faLocationDot, faImage, faCircleInfo, faCheckDouble, faTicket, faXmark, faPlus, faClock } from "@fortawesome/free-solid-svg-icons"
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { IconProp } from "@fortawesome/fontawesome-svg-core"
 import {
@@ -35,6 +35,7 @@ interface TabModel {
   name: string
 }
 interface ticketType {
+  type: string
   name: string
   depth: number
   length: number
@@ -47,6 +48,7 @@ const dataTabList: Array<TabModel> = [
   { icon: faLocationDot, name: "Vị trí" },
   { icon: faTicket, name: "Vé" },
   { icon: faCheckDouble, name: "Dịch vụ" },
+  
 ]
 const options = [
   { value: 'ADULT', label: 'Vé dành cho người lớn' },
@@ -64,6 +66,7 @@ function checkHour(hour: number) {
 
 export default function RegistPool() {
   const token = useSelector((state: any) => state.token)
+  const [userId, setUserId] = useState<string>('')
   const [selectedTab, setSelectedTab] = useState(4)
   // Panel 1
   const [poolname, setPoolname] = useState<string>("")
@@ -129,8 +132,9 @@ export default function RegistPool() {
   function removeTicket(ticket: ticketType, i: number) {
     setArrayTickets(arrayTickets.splice(arrayTickets.indexOf(ticket), 1))
   }
-  function addTicket(name: string, depth: number, length: number, width: number, price: number) {
+  function addTicket(type: string, name: string, depth: number, length: number, width: number, price: number) {
     var newTicket: ticketType = {
+      type: type,
       name: name,
       depth: depth,
       length: length,
@@ -143,6 +147,13 @@ export default function RegistPool() {
   // Panel 5
   const [arrayService, setArrayService] = useState<Array<any>>([])
   const [arrayResultService, setArrayResultService] = useState<Array<number>>([])
+  const handleCheckboxChange = (event: any) => {
+    var updatedResSer = arrayResultService.filter(s => s !== event.target.value)
+    setArrayResultService(updatedResSer)
+    if (event.target.checked) {
+      setArrayResultService(prev => [...prev, event.target.value])
+    }
+  };
 
 
 
@@ -213,10 +224,181 @@ export default function RegistPool() {
       })
       return
     }
+    console.log(arrayTickets);
+
     setSelectedTab(4)
   }
-  function handleBtnPanel5() {
-    setSelectedTab(4)
+  function handleBtnComplete() {
+    // if (!poolname || !pooldes || !poolopenT || !poolcloseT) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Lỗi",
+    //     text: 'Bạn cần nhập đủ các thông tin!',
+    //   }).then(function (result) {
+    //   })
+    //   return
+    // }
+    // if (!(checkHour(poolopenT) && checkHour(poolcloseT))) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Lỗi",
+    //     text: 'Phải nhập giờ trong khoảng 0-24!',
+    //   }).then(function (result) {
+    //   })
+    //   return
+    // }
+    // if (Array.from(files).length < 5) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Lỗi",
+    //     text: 'Vui lòng chọn ít nhất 5 ảnh cho bể bơi',
+    //     confirmButtonText: 'Xác nhận',
+    //   }).then(function (result) {
+    //     if (result.value) {
+    //     }
+    //   })
+    //   return
+    // }
+    // if (!value) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Lỗi",
+    //     text: 'Vui lòng điền vị trí bể bơi',
+    //     confirmButtonText: 'Xác nhận',
+    //   }).then(function (result) {
+    //     if (result.value) {
+    //     }
+    //   })
+    //   return
+    // }
+    // if (arrayTickets.length == 0) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Lỗi",
+    //     text: 'Vui lòng thêm ít nhất một vé!',
+    //     confirmButtonText: 'Xác nhận',
+    //   }).then(function (result) {
+    //     if (result.value) {
+    //     }
+    //   })
+    //   return
+    // }
+    const fd = new FormData()
+    Array.from(files).forEach(e => {
+      fd.append("image[]", e)
+    })
+
+    axios
+      .post(`${api}/files`, fd, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          'Authorization': `Bearer ${token}`
+        },
+      })
+      .then((res) => {
+        var createImgs: Array<any> = []
+        var createPools: Array<any> = []
+        var createTickets: Array<any> = []
+        var createService: Array<any> = []
+        res.data.data.forEach((element: { id: string }) => {
+          createImgs.push(
+            {
+              "pool_id": "+",
+              "directus_files_id": {
+                "id": element.id
+              }
+            }
+          )
+        });
+        arrayTickets.forEach(e => {
+          var desIdk: string = e.type == "ADULT" ? 'Bể bơi có độ sâu từ 1m5 đến 2m thích hợp cho người lớn.' : 'Bể bơi có độ sâu từ 40cm đến 1m2 thích hợp cho trẻ em.'
+          var imgIdk: string = e.type == "ADULT" ? 'ae205a25-ec7c-4f15-9b84-e22b7c5d505d' : '81667a99-ff3c-484a-8bed-ebcd0e42a088'
+          createPools.push(
+            {
+              "name": e.name,
+              "depth": e.depth,
+              "length": e.length,
+              "width": e.width,
+              "quantity": 1,
+              "description": desIdk,
+              "guest_type": e.type,
+              "capacity": 20,
+              "images": {
+                "create": [
+                  {
+                    "pool_detail_id": "+",
+                    "directus_files_id": {
+                      "id": imgIdk
+                    }
+                  }
+                ],
+                "update": [],
+                "delete": []
+              }
+            }
+          )
+          createTickets.push(
+            {
+              "ticket_type": e.type,
+              "ticket_name": e.name,
+              "price": e.price,
+              "total_ticket": 50
+            }
+          )
+        })
+        arrayResultService.forEach(e => {
+          createService.push(
+            {
+              "pool_id": "+",
+              "service_id": {
+                "id": e
+              }
+            }
+          )
+        })
+        const sendData = {
+          "name": poolname,
+          "description": pooldes,
+          "host_id": userId,
+          "longtitude": geocoding.lng,
+          "latitude": geocoding.lat,
+          "location": value,
+          "images": {
+            "create": createImgs,
+            "update": [],
+            "delete": []
+          },
+          "opening_time": poolopenT,
+          "closing_time": poolcloseT,
+          "rating": (Math.random() * (5 - 3) + 3).toFixed(1),
+          "pools": {
+            "create": createPools,
+            "update": [],
+            "delete": []
+          },
+          "services": {
+            "create": createService,
+            "update": [],
+            "delete": []
+          },
+          "tickets": {
+            "create": createTickets,
+            "update": [],
+            "delete": []
+          }
+        }
+        return axios.post(`${api}/items/pool`, sendData, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+        )
+      })
+      .then(res => {
+        location.href = '/mypool'
+      })
+      .catch((err) => window.alert("sai"))
+
   }
 
   useEffect(() => {
@@ -234,7 +416,14 @@ export default function RegistPool() {
     }
     axios.get(`${api}/items/service?fields=icon,name,code,id`).then(res => {
       setArrayService(res.data.data)
-    }).catch(err => err)
+      return axios.get(`${api}/users/me`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+    })
+      .then(res => setUserId(res.data.data.id))
+      .catch(err => err)
   }, [])
 
   return (
@@ -249,6 +438,10 @@ export default function RegistPool() {
             {" "}
             Chủ bể bơi
           </Link>
+        </div>
+        <div className={styles.headerCreate} >
+          <strong>Tạo bể bơi</strong>
+          <Button content="Hoàn thành" btnStyle={ButtonStyle.primary} func={handleBtnComplete} />
         </div>
         <div className={styles.main}>
           <Tabs className={styles.mainCreate} selectedIndex={selectedTab}>
@@ -348,7 +541,7 @@ export default function RegistPool() {
                   {arrayService.map((e, i) => {
                     return (
                       <section>
-                        <input type="checkbox" value={e.id} id={e.code} />
+                        <input type="checkbox" value={e.id} id={e.code} onChange={handleCheckboxChange} />
                         <label htmlFor={e.code}>
                           <p>{e.name}</p>
                           <Image src={`${api}/assets/${e.icon}`} height={50} width={50} alt="" />
@@ -357,7 +550,7 @@ export default function RegistPool() {
                     )
                   })}
                 </div>
-                <Button content="Hoafn Thanh" btnStyle={ButtonStyle.primary} func={handleBtnPanel5} />
+                <Button content="Hoàn thành" btnStyle={ButtonStyle.primary} func={handleBtnComplete} />
               </TabPanel>
             </div>
           </Tabs>
@@ -400,6 +593,7 @@ function Ticket({ ticket, func, i }: { ticket: ticketType, func: Function, i: nu
   )
 }
 function CreateTicketBox({ func, hide }: { func: Function, hide: Function }) {
+  const [Value, setValue] = useState<string>()
   const [Name, setName] = useState<string>()
   const [Depth, setDepth] = useState<number>()
   const [Length, setLength] = useState<number>()
@@ -415,7 +609,7 @@ function CreateTicketBox({ func, hide }: { func: Function, hide: Function }) {
       })
       return
     }
-    func(Name, Depth, Length, Width, Price)
+    func(Value, Name, Depth, Length, Width, Price)
   }
 
 
@@ -426,7 +620,10 @@ function CreateTicketBox({ func, hide }: { func: Function, hide: Function }) {
           <FontAwesomeIcon icon={faXmark} size="2x" />
         </div>
         <div>
-          <Select options={options} placeholder="Chọn loại vé" onChange={(value) => setName(value?.label)} />
+          <Select options={options} placeholder="Chọn loại vé" onChange={(value) => {
+            setName(value?.label)
+            setValue(value?.value)
+          }} />
         </div>
         <div>
           <label htmlFor="depth">Độ sâu (m)</label>
@@ -447,18 +644,6 @@ function CreateTicketBox({ func, hide }: { func: Function, hide: Function }) {
         <Button content="Thêm vé" btnStyle={ButtonStyle.primary} func={handleBtnPanel3} />
       </section>
       <section className={styles.backdrop} onClick={e => hide()}></section>
-    </>
-  )
-}
-
-function Service({ service }: { service: ticketType }) {
-  return (
-    <>
-      <div className={styles.ticket}>
-        <FontAwesomeIcon icon={faTicket} size="2x" style={{ borderRadius: '50%', padding: '16px' }} />
-        <div className={styles.mainDes}>
-        </div>
-      </div>
     </>
   )
 }

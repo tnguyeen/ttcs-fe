@@ -35,7 +35,7 @@ export default function Header() {
     setLogin(true)
     // tesst()
     // console.log(tesst());
-    
+
   }
   const hideLogin = () => {
     setLogin(false)
@@ -54,19 +54,19 @@ export default function Header() {
 
   useOnClickOutside(optionBox, handleClickOutsideOption)
   useEffect(() => {
-    if(userLog){
+    if (userLog) {
 
       axios
-      .get(`${api}/users/me`, {
-        headers: {
-          Authorization: "Bearer " + userLog,
-        },
-      })
-      .then((res) => {
-        setUsername(res.data.data.first_name + " " + res.data.data.last_name)
-        setUseremail(res.data.data.email)
-      })
-      .catch((err) => err)
+        .get(`${api}/users/me`, {
+          headers: {
+            Authorization: "Bearer " + userLog,
+          },
+        })
+        .then((res) => {
+          setUsername(res.data.data.first_name + " " + res.data.data.last_name)
+          setUseremail(res.data.data.email)
+        })
+        .catch((err) => err)
     }
   }, [userLog])
   return (
@@ -108,6 +108,11 @@ export default function Header() {
                         </Link>
                       </li>
                       <li>
+                        <Link style={{ flex: "auto" }} href="/mypool">
+                          Bể bơi của tôi
+                        </Link>
+                      </li>
+                      <li>
                         <Link style={{ flex: "auto" }} href="/orders">
                           Vé của tôi
                         </Link>
@@ -117,7 +122,7 @@ export default function Header() {
                           setOption(false)
                           logOut()
                         }}
-                        style={{padding:'10px 20px'}}
+                        style={{ padding: '10px 20px' }}
                       >
                         Đăng xuất
                       </li>

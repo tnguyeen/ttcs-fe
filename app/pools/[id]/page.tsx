@@ -7,7 +7,6 @@ import {
   FontAwesomeIconProps,
 } from "@fortawesome/react-fontawesome"
 import styles from "./Pool.module.scss"
-import Imgs from "@/components/picture"
 import {
   faArrowUpFromBracket,
   faHeart,
@@ -16,6 +15,7 @@ import {
   faUtensils,
   faVest,
   faRing,
+  faAnglesRight,
 } from "@fortawesome/free-solid-svg-icons"
 import Image, { StaticImageData } from "next/image"
 import { MouseEventHandler, useEffect, useRef, useState } from "react"
@@ -58,7 +58,7 @@ interface PoolModel {
   description: string
   rating: number
   location_searching: string
-  pools: [
+  pools: Array<
     {
       id: number
       status: string
@@ -83,33 +83,8 @@ interface PoolModel {
           directus_files_id: string
         }
       ]
-    },
-    {
-      id: number
-      status: string
-      sort: string
-      user_created: string
-      date_created: string
-      user_updated: null
-      date_updated: null
-      depth: number
-      length: number
-      width: number
-      quantity: number
-      description: string
-      guest_type: string
-      capacity: number
-      pool_id: number
-      name: string
-      images: [
-        {
-          id: number
-          pool_detail_id: number
-          directus_files_id: string
-        }
-      ]
     }
-  ]
+  >
   images: [
     {
       id: number
@@ -117,25 +92,16 @@ interface PoolModel {
       directus_files_id: string
     }
   ]
-  services: [
+  services: Array<
     {
       service_id: {
-        name: string
-      }
-    },
-    {
-      service_id: {
-        name: string
-      }
-    },
-    {
-      service_id: {
+        icon: string
         name: string
       }
     }
-  ]
+  >
   orders: [1]
-  tickets: [
+  tickets: Array<
     {
       id: number
       status: string
@@ -149,24 +115,9 @@ interface PoolModel {
       price: number
       total_ticket: number
       ticket_name: string
-      ticket_remain: number
-    },
-    {
-      id: number
-      status: string
-      sort: string
-      user_created: string
-      date_created: string
-      user_updated: string
-      date_updated: string
-      pool_id: number
-      ticket_type: string
-      price: number
-      ticket_name: string
-      total_ticket: number
       ticket_remain: number
     }
-  ]
+  >
   reviews: []
 }
 
@@ -279,7 +230,7 @@ export default function Pool({ params }: { params: { id: string } }) {
           </div> */}
         </div>
         <div className={styles.detailWrapper}>
-          <PoolPics />
+          <PoolPics images={pool.images} />
           <div className={styles.detail}>
             <div className={styles.trai}>
               <div className={styles.tren}>
@@ -384,7 +335,7 @@ export default function Pool({ params }: { params: { id: string } }) {
                 {pool.services.map((e, i) => {
                   return (
                     <div className={styles.kbt1Element} key={i}>
-                      <FontAwesomeIcon icon={iconService(e.service_id.name)} />
+                      <Image src={`${api}/assets/${e.service_id.icon}`} alt="" width={50} height={50} />
                       <span>{e.service_id.name}</span>
                     </div>
                   )
@@ -446,7 +397,11 @@ export default function Pool({ params }: { params: { id: string } }) {
             />
             <h2 style={{ marginLeft: "20px" }}>{pool.rating} trên 5</h2>
           </div>
-          {/* <div className={styles.binhluan}></div> */}
+          <div className={styles.binhluan}>
+            <div className={styles.main}>
+              { }
+            </div>
+          </div>
         </div>
         <div className={styles.suggest}>
           <h2 style={{ margin: "20px" }}>Bể bơi lân cận</h2>
@@ -463,6 +418,26 @@ export default function Pool({ params }: { params: { id: string } }) {
               )
             })}
           </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '10px',
+              border: '1px solid black',
+              borderRadius: '15px',
+              width: '240px',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              marginTop: '20px'
+            }}
+            onClick={() => {
+              window.location.href = window.location.origin + `/pools?location=${pool.location.split(',').pop()}`
+            }}
+          >
+            <p style={{ fontSize: '22px', fontWeight: '500' }}>Hiển thị thêm</p>
+            <FontAwesomeIcon icon={faAnglesRight} />
+          </div>
         </div>
       </div>
     </>
@@ -471,7 +446,7 @@ export default function Pool({ params }: { params: { id: string } }) {
 
 //functions
 
-function PoolPics() {
+function PoolPics({ images }: { images: Array<any> }) {
   const [active, setActive] = useState<boolean>(false)
   const [current, setCurrent] = useState<number>(0)
   function handleClose() {
@@ -479,13 +454,13 @@ function PoolPics() {
   }
   return (
     <div className={styles.pics}>
-      {Imgs.map((slide, i) => {
+      {images.map((img, i) => {
         if (i > 4) return
         return (
           <div
             key={i}
             className={styles[`item${i + 1}`] + " " + styles.img}
-            style={{ backgroundImage: `url("${slide.src}")` }}
+            style={{ backgroundImage: `url("${api}/assets/${img.directus_files_id}")` }}
             onClick={() => {
               setActive(true)
               setCurrent(i)
@@ -494,7 +469,7 @@ function PoolPics() {
         )
       })}
       {active && (
-        <Slider handleClose={handleClose} index={current} imgs={Imgs} />
+        <Slider handleClose={handleClose} index={current} imgs={images} />
       )}
     </div>
   )

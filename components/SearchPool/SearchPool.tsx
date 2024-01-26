@@ -15,8 +15,7 @@ export default function SearchPool({placeholder}:{placeholder : string}) {
 
   const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    window.location.href =
-      window.location.origin + `/pools?location=${location}`
+    window.location.href = window.location.origin + `/pools?location=${location}`
   }
 
   return (
