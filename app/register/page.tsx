@@ -80,13 +80,6 @@ export default function Register() {
       <div className={styles.wrapper}>
         <div className={styles.slogan}>
           <h1>Aquarius</h1>
-          <h3>
-            Discover random
-            <br />
-            catchy slogan ideas
-            <br />
-            for your brand
-          </h3>
         </div>
         <div className={styles.registerForm}>
           <h2>Vui lòng điền thông tin để đăng kí tài khoản!</h2>
@@ -135,8 +128,8 @@ export default function Register() {
                 onChange={changeHandler}
                 value={emailValue}
                 required
-                // minLength={4}
-                // pattern="[A-Za-z0-9]+"
+              // minLength={4}
+              // pattern="[A-Za-z0-9]+"
               />
             </div>
             <div>

@@ -10,6 +10,10 @@
   }
 }
 .secondary {
+  align-self: center;
+  justify-self: center;
+  border: 0;
+  cursor: pointer;
   border: 1px solid rgba(0, 0, 0, 0.7);
   background-color: #d3d3d3;
 

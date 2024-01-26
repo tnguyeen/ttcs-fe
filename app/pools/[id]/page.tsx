@@ -118,7 +118,7 @@ interface PoolModel {
       ticket_remain: number
     }
   >
-  reviews: []
+  reviews: Array<any>
 }
 
 interface PoolProps {
@@ -162,9 +162,32 @@ export default function Pool({ params }: { params: { id: string } }) {
 
   const [showinfoLocation, setShowinfoLocation] = useState(false);
 
+  const [limitRv, setLimitRv] = useState(4)
+  const [btnLimit, setBtnLimit] = useState(true)
 
   const router = useRouter()
 
+  function getMinDate() {
+    var dtToday = new Date();
+
+    var month = dtToday.getMonth() + 1;
+    var day = dtToday.getDate();
+    var year = dtToday.getFullYear();
+    var montha
+    var daya
+    if (month < 10) {
+      montha = '0' + month.toString();
+    } else {
+      montha = month.toString()
+    }
+    if (day < 10) {
+      daya = '0' + day.toString();
+    } else {
+      daya = day.toString();
+    }
+    var maxDate = year + '-' + montha + '-' + daya;
+    return maxDate
+  }
   function handleCongAdult() {
     setNumAdult(numAdult + 1)
   }
@@ -180,6 +203,19 @@ export default function Pool({ params }: { params: { id: string } }) {
     setNumChild(numChild - 1)
   }
   function handleThanhtoan() {
+
+    if (numAdult == 0 && numChild == 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: 'Bạn cần chọn ít nhất 1 vé',
+        confirmButtonText: 'Xác nhận'
+      }).then(function (result) {
+        if (result.value) {
+        }
+      })
+      return
+    }
     if (!pool) return
     let data = `/thanhtoan?na=${numAdult}&nc=${numChild}&p_id=${pool!.id
       }&date=${date}`
@@ -284,6 +320,7 @@ export default function Pool({ params }: { params: { id: string } }) {
                     <input
                       type="date"
                       onChange={(e) => setDate(e.target.value)}
+                      min={getMinDate()}
                     />
                   </div>
                   <div className={styles.ticketPicker}>
@@ -393,14 +430,38 @@ export default function Pool({ params }: { params: { id: string } }) {
               allowFraction
               disableFillHover={true}
               allowHover={false}
-            /* Available Props */
             />
             <h2 style={{ marginLeft: "20px" }}>{pool.rating} trên 5</h2>
           </div>
           <div className={styles.binhluan}>
             <div className={styles.main}>
-              { }
+              {pool.reviews && pool.reviews.map((e, i) => {
+                if (i < limitRv) {
+                  return <Review rv={e} />
+                }
+              })}
             </div>
+            {(btnLimit && (pool.reviews.length > 4)) ? <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                padding: '10px',
+                border: '1px solid black',
+                borderRadius: '15px',
+                width: '240px',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                marginTop: '20px'
+              }}
+              onClick={() => {
+                setLimitRv(10000000000)
+                setBtnLimit(false)
+              }}
+            >
+              <p style={{ fontSize: '22px', fontWeight: '500' }}>Hiển thị thêm</p>
+              <FontAwesomeIcon icon={faAnglesRight} />
+            </div> : <></>}
           </div>
         </div>
         <div className={styles.suggest}>
@@ -471,6 +532,34 @@ function PoolPics({ images }: { images: Array<any> }) {
       {active && (
         <Slider handleClose={handleClose} index={current} imgs={images} />
       )}
+    </div>
+  )
+}
+
+
+function Review({ rv }: { rv: any }) {
+  const date = new Date(rv.date_created);
+
+  const month = date.toLocaleString('default', { month: 'long' });
+  const year = date.getFullYear();
+  const formattedDate = `${month} năm ${year}`;
+
+  return (
+    <div className={styles.review}>
+      <div className={styles.header}>
+        <div className={styles.ava} style={rv.user_created.avatar && { backgroundImage: `url("${api}/assets/${rv.user_created.avatar}")` }}></div>
+        <h3>{rv.user_created.first_name + " " + rv.user_created.last_name}</h3>
+      </div>
+      <div className={styles.info}>
+        <Rating
+          initialValue={rv.total_rating}
+          allowFraction
+          disableFillHover={true}
+          allowHover={false}
+        />
+        <p>{formattedDate}</p>
+      </div>
+      <div className={styles.content}>{rv.content}</div>
     </div>
   )
 }

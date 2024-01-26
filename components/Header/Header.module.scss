@@ -45,10 +45,15 @@
         cursor: pointer;
         font-size: 16px;
         font-weight: 500;
-        .defava {
+        .ava {
+          background-image: url('./defava.jpg');
+          background-size: cover;
+          background-position: center;
+          aspect-ratio: 1/1;
+          height: 30px;
+          width: 30px;
           border-radius: 50%;
-          border: 1px solid rgba(0, 0, 0, 0.7);
-          padding: 3px;
+          // margin-right: 10px;
         }
         .options {
           position: absolute;

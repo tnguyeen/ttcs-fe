@@ -111,7 +111,7 @@ export default function Pool({
           height={290}
           width={300}
         />
-        <p>{name}</p>
+        <p className={styles.name}>{name}</p>
         <span className={styles.location}>
           <FontAwesomeIcon
             icon={faLocationDot}

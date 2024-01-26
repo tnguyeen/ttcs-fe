@@ -7,7 +7,7 @@
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  background-image: url("./searchSec.jpg");
+  background-image: url("./aa.png");
   background-color: #cccccc;
   background-position: center;
   background-repeat: no-repeat;
@@ -20,7 +20,7 @@
     transform: translateY(50%);
     height: 80px;
     border-radius: 500px;
-    border: 1px solid black;
+    border: 1px solid rgb(100, 100, 100);
     background-color: white;
     display: flex;
     align-items: center;
@@ -32,7 +32,7 @@
       border: none;
       background-color: transparent;
       padding: 10px 36px;
-      border-right: 1px solid black;
+      border-right: 1px solid rgb(100, 100, 100);
       &:focus {
         outline: 0;
       }

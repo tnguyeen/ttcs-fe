@@ -3,9 +3,8 @@ import { useRef, useState } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"
 import styles from "./SearchPool.module.scss"
-import { redirect } from "next/navigation"
 
-export default function SearchPool({placeholder}:{placeholder : string}) {
+export default function SearchPool({ placeholder }: { placeholder: string }) {
   const [location, setLocation] = useState<string>(placeholder)
   const inputLocation = useRef<HTMLInputElement>(null)
 
@@ -25,14 +24,13 @@ export default function SearchPool({placeholder}:{placeholder : string}) {
           type="text"
           name="location"
           id="location"
-          placeholder={placeholder  || "Tìm kiếm"}
+          placeholder={placeholder || "Tìm kiếm"}
           ref={inputLocation}
           onChange={changeHandler}
           value={location}
-          required
         />
         <button type="submit">
-          <FontAwesomeIcon icon={faMagnifyingGlass} size="xl" />
+          <FontAwesomeIcon icon={faMagnifyingGlass} size="xl" color="rgb(100, 100, 100)" />
         </button>
       </form>
     </div>

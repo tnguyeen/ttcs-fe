@@ -32,10 +32,24 @@
       padding: 30px 100px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      height: 50px;
-      a {
-        // width: 300px;
+      height: 100px;
+      label{
+        font-size: 22px;
+        font-weight: 500;
+        display: inline-block;
+        width: 140px;
+      }
+      input {
+        height: 50px;
+        width: 400px;
+        border-radius: 10px;
+        margin-left: 20px;
+        border: 1px solid #00B2EB;
+        font-size: 20px;
+        padding: 10px 20px;
+        &:focus {
+          outline: 0;
+        }
       }
     }
   }

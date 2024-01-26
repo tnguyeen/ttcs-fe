@@ -57,13 +57,7 @@ export default function Profile() {
     <>
       <div className={styles.wrapper}>
         <div className={styles.sec1}>
-          <Image
-            src={defava}
-            height={260}
-            width={360}
-            alt=""
-            className={styles.ava}
-          />
+          <div className={styles.ava} style={user.avatar ? { backgroundImage: `url("${api}/assets/${user.avatar}")` } : {}}></div>
           <div className={styles.info}>
             <h2>{user?.first_name + " " + user?.last_name}</h2>
           </div>
@@ -72,12 +66,20 @@ export default function Profile() {
           <div>
             <h3 style={{ width: "200px" }}>Địa chỉ email:</h3>
             <span style={{ flex: "auto" }}>{user?.email}</span>
-            <Button btnStyle={ButtonStyle.secondary} content="Thay đổi" />
+            {/* <Button btnStyle={ButtonStyle.secondary} content="Thay đổi" /> */}
           </div>
           <div>
-            <h3 style={{ width: "200px" }}>Mật khẩu:</h3>
-            <span style={{ flex: "auto" }}>{user?.password}</span>
-            <Button btnStyle={ButtonStyle.secondary} content="Thay đổi" />
+            <h3 style={{ width: "400px" }}>
+              <Link
+                style={{
+                  color: "black",
+                  padding: "0 180px 0 0",
+                }}
+                href="/myinfo"
+              >
+                Thông tin cá nhân
+              </Link>
+            </h3>
           </div>
           <div>
             <h3 style={{ width: "400px" }}>
@@ -89,6 +91,19 @@ export default function Profile() {
                 href="/orders"
               >
                 Vé đã đặt
+              </Link>
+            </h3>
+          </div>
+          <div>
+            <h3 style={{ width: "400px" }}>
+              <Link
+                style={{
+                  color: "black",
+                  padding: "0 180px 0 0",
+                }}
+                href="/mypool"
+              >
+                Bể bơi của tôi
               </Link>
             </h3>
           </div>

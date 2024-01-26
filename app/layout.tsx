@@ -34,7 +34,7 @@ export default function RootLayout({
       <html lang="en">
         <body
           className={inter.className}
-          style={{ backgroundColor: "rgb(242, 242, 242)" }}
+          style={{ backgroundColor: "rgb(255, 255, 255)" }}
         >
           <Provider store={store}>
             <PersistGate persistor={persistor} loading={null}>

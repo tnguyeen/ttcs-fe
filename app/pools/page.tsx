@@ -19,7 +19,6 @@ interface priceModel {
   to_price: number
   id: number
 }
-
 const resultsFilters: Array<{ filter: string; id: number }> = [
   // { filter: "Đề xuất của chúng tôi", id: 1 },
   { filter: "Được ưa chuộng nhất", id: 2 },
@@ -51,23 +50,32 @@ function Items({ currentItems }: any) {
     </>
   )
 }
+const listTime: Array<any> = [
+  { id: 'time1', open: 5, close: 20 },
+  { id: 'time2', open: 8, close: 22 },
+  { id: 'time3', open: 16, close: 22 },
+]
 
 export default function Pools() {
   const searchParam = useSearchParams()
   const [currentTab, setCurrentTab] = useState<number>(2)
   const [pools, setPools] = useState<Array<PoolProps>>([])
 
-  const [listPrices, setListPrices] = useState<Array<priceModel>>([])
+  const [listPrices, setListPrices] = useState<Array<any>>([])
   const [listServices, setListServices] = useState<Array<serviceModel>>([])
 
   const [priceId, setPriceId] = useState<priceModel>()
   const [arrService, setArrService] = useState<Array<string>>([])
 
+  const [timeId, setTimeId] = useState<any>()
+
   const [itemOffset, setItemOffset] = useState(0)
   const currentItems = pools.slice(itemOffset, itemOffset + 4)
   const pageCount = Math.ceil(pools.length / 4)
+  const [currentPage, setCurrentPage] = useState(0);
 
   const handlePageClick = (event: any) => {
+    setCurrentPage(event.selected)
     const newOffset = (event.selected * 4) % pools.length
     setItemOffset(newOffset)
   }
@@ -96,26 +104,19 @@ export default function Pools() {
     let reqService: string =
       arrService.length != 0 ? `service=${arrService.join()}` : ""
     let reqPrice: string = priceId
-      ? `from_price=${priceId?.from_price}&to_price=300000000`
+      ? `from_price=${priceId?.from_price}&to_price=${priceId?.to_price}`
       : ""
-    let reqArr: Array<string> = [reqLocation, reqService, reqPrice]
-
+    let reqTime: string = timeId
+      ? `opening_time=${timeId.open}&closing_time=${timeId.close}`
+      : ''
+    let reqArr: Array<string> = [reqLocation, reqService, reqPrice, 'limit=99&page=1', reqTime]
     const a = reqArr.filter((ser) => ser !== "")
+    setCurrentPage(0)
     return a.join("&")
   }
 
   useEffect(() => {
-    console.log(searchParam.get("location"))
-
-    axios(`${api}/pool?${finalReq()}`)
-      .then((res) => {
-        setPools(
-          res.data.data.sort(function (a: PoolProps, b: PoolProps) {
-            return b.rating! - a.rating!
-          })
-        )
-        return axios(`${api}/items/service?fields=code,name,id`)
-      })
+    axios(`${api}/items/service?fields=code,name,id`)
       .then((res) => {
         setListServices(res.data.data)
         return axios(`${api}/items/price`)
@@ -126,7 +127,22 @@ export default function Pools() {
       .catch((err) => {
         console.log(err)
       })
-  }, [searchParam.get("location"), arrService, priceId])
+  }, [])
+
+  useEffect(() => {
+    axios(`${api}/pool?${finalReq()}`)
+      .then((res) => {
+
+        setPools(
+          res.data.data.sort(function (a: PoolProps, b: PoolProps) {
+            return b.rating! - a.rating!
+          })
+        )
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }, [searchParam.get("location"), arrService, priceId, timeId])
 
   return (
     <>
@@ -148,38 +164,98 @@ export default function Pools() {
             <div className={styles.filters}>
               <form className={styles.filtersBox}>
                 <h2 className={styles.header}>Lọc</h2>
-                <p>Loại bể</p>
-                {listPrices.map((e, i) => {
+                <p>Giờ hoạt động</p>
+                {listTime.map((el, i) => {
                   return (
                     <>
                       <div>
                         <input
                           type="radio"
-                          id={String(e.id)}
-                          onChange={(el) => {
-                            setPriceId(e)
+                          id={String(el.id)}
+                          onChange={(e) => {
+                            setTimeId(el)
                           }}
-                          name="type"
-                          value={String(e.id)}
+                          onClick={e => {
+                            if (timeId == el) {
+                              e.currentTarget.checked = false
+                              setTimeId(undefined)
+                            }
+                          }}
+                          name="time"
+                          value={String(el.id)}
                           className={styles.filterInput}
                         />
-                        <label htmlFor={String(e.id)}>{`Từ ${VND.format(
-                          e.from_price
-                        )} - ${VND.format(e.to_price)}`}</label>
+                        <label htmlFor={String(el.id)}>{`${el.open} giờ - ${el.close} giờ`}</label>
                       </div>
                       <br></br>
                     </>
                   )
                 })}
-
+                <p>Khoảng giá</p>
+                {listPrices.map((el, i) => {
+                  if (i + 1 == listPrices.length) {
+                    return (
+                      <>
+                        <div>
+                          <input
+                            type="radio"
+                            id={String(el.id)}
+                            onChange={(e) => {
+                              setPriceId(el)
+                            }}
+                            onClick={e => {
+                              if (priceId == el) {
+                                e.currentTarget.checked = false
+                                setPriceId(undefined)
+                              }
+                            }}
+                            name="price"
+                            value={String(el.id)}
+                            className={styles.filterInput}
+                          />
+                          <label htmlFor={String(el.id)}>{`Trên ${VND.format(
+                            el.from_price
+                          )} `}</label>
+                        </div>
+                        <br></br>
+                      </>
+                    )
+                  }
+                  return (
+                    <>
+                      <div>
+                        <input
+                          type="radio"
+                          id={String(el.id)}
+                          onChange={(e) => {
+                            setPriceId(el)
+                          }}
+                          onClick={e => {
+                            if (priceId == el) {
+                              e.currentTarget.checked = false
+                              setPriceId(undefined)
+                            }
+                          }}
+                          name="price"
+                          value={String(el.id)}
+                          className={styles.filterInput}
+                        />
+                        <label htmlFor={String(el.id)}>{`Từ ${VND.format(
+                          el.from_price
+                        )} - ${VND.format(el.to_price)}`}</label>
+                      </div>
+                      <br></br>
+                    </>
+                  )
+                })}
                 <p>Dịch vụ đi kèm</p>
-                {listServices.map((e, i) => {
+                {listServices.map((el, i) => {
                   return (
                     <>
                       <div>
                         <input
                           type="checkbox"
-                          id={e.code}
+                          id={el.code}
                           name="type"
                           onChange={(e) => {
                             if (e.target.checked) {
@@ -194,10 +270,10 @@ export default function Pools() {
                               setArrService(a)
                             }
                           }}
-                          value={e.id}
+                          value={el.id}
                           className={styles.filterInput}
                         />
-                        <label htmlFor={e.code}>{e.name}</label>
+                        <label htmlFor={el.code}>{el.name}</label>
                       </div>
                       <br></br>
                     </>

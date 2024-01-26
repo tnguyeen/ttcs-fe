@@ -25,6 +25,7 @@ export default function Header() {
   const [login, setLogin] = useState<Boolean>(false)
   const [option, setOption] = useState<Boolean>(false)
   const [username, setUsername] = useState<string>("")
+  const [userava, setUserava] = useState<string>("")
   const [useremail, setUseremail] = useState<string>("")
   const userLog = useSelector((state: any) => state.token)
   const optionBox = useRef(null)
@@ -65,6 +66,7 @@ export default function Header() {
         .then((res) => {
           setUsername(res.data.data.first_name + " " + res.data.data.last_name)
           setUseremail(res.data.data.email)
+          setUserava(res.data.data.avatar)
         })
         .catch((err) => err)
     }
@@ -87,13 +89,7 @@ export default function Header() {
                   setOption(true)
                 }}
               >
-                <Image
-                  height={30}
-                  width={30}
-                  src={defava}
-                  alt=""
-                  className={styles.defava}
-                />
+                <div className={styles.ava} style={userava ? { backgroundImage: `url("${api}/assets/${userava}")` } : {}}></div>
                 <FontAwesomeIcon icon={faBars} />
                 {option && (
                   <div className={styles.options} ref={optionBox}>

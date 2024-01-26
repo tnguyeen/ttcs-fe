@@ -16,27 +16,27 @@ interface PoolModel {
   name: string
   location: string
   pools: Array<{
-      id: number
-      guest_type: string
-      capacity: number
-      pool_id: number
-      name: string
-      images: [
-        {
-          id: number
-          pool_detail_id: number
-          directus_files_id: string
-        }
-      ]
-    }>
+    id: number
+    guest_type: string
+    capacity: number
+    pool_id: number
+    name: string
+    images: [
+      {
+        id: number
+        pool_detail_id: number
+        directus_files_id: string
+      }
+    ]
+  }>
   tickets: Array<{
-      id: number
-      pool_id: number
-      ticket_type: string
-      ticket_name: string
-      price: number
-      total_ticket: number
-    }>
+    id: number
+    pool_id: number
+    ticket_type: string
+    ticket_name: string
+    price: number
+    total_ticket: number
+  }>
   reviews: []
 }
 
@@ -133,11 +133,10 @@ export default function Thanhtoan() {
       })
       .then((res) => {
         let link = `${api}/order/create_payment_url?order_id=${res.data.data.id}&amount=${res.data.data.total_amount}`
-
         return axios.get(link)
       })
       .then((res) => {
-        window.open(res.data.data.redirectUrl, "_ blank")
+        window.location = res.data.data.redirectUrl
       })
       .catch((err) => {
         Swal.fire({
@@ -149,6 +148,37 @@ export default function Thanhtoan() {
   }
 
   useEffect(() => {
+    if (searchParam.get("result")) {
+      if (searchParam.get("result") == 'success') {
+        Swal.fire({
+          icon: "success",
+          title: "Thanh toán thành công",
+          showConfirmButton: false,
+          timer: 3500,
+          confirmButtonText: 'Xác nhận'
+        }).then(function (result) {
+          if (result.value) {
+          }
+        })
+        setTimeout(() => {
+          location.href = '/orders'
+        }, 3500);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: 'Thanh toán thất bại.',
+          confirmButtonText: 'Xác nhận'
+        }).then(function (result) {
+          if (result.value) {
+            location.href = '/orders'
+          }
+        })
+        setTimeout(() => {
+          location.href = '/orders'
+        }, 3500);
+      }
+    }
     axios(`${api}/pool/${searchParam.get("p_id")}`)
       .then((res) => {
         setPool(res.data.data)
@@ -156,7 +186,7 @@ export default function Thanhtoan() {
       .catch((err) => {
         Swal.fire({
           icon: "error",
-          title: "Oops...",
+          title: "Lỗi",
           text: err.response.data.message,
           footer: '<a href="/">Trở về trang chủ</a>',
         })
@@ -177,100 +207,100 @@ export default function Thanhtoan() {
 
   return (
     <>
-    <div className={styles.wrapper}>
-      <div className={styles.mainHeader}>
-        <Link href="/" color="#22BFEA">
-          Trang chủ
-        </Link>
-        <span>{`  >  `}</span>
-        <Link href="" className={styles.mainHref}>
-          {" "}
-          Thanh toán
-        </Link>
-      </div>
-      <div className={styles.main}>
-        {pool && (
-          <div className={styles.trai}>
-            <div className={styles.tenPool}>
-              <strong style={{ fontSize: 20 }}>{pool?.name}</strong>
-            </div>
-            <div className={styles.location}>{pool?.location}</div>
-            <div className={styles.numAdult}>
-              {`x${searchParam.get("na")}  ${pool.tickets[0].ticket_name}`}
-              <p>{VND.format(pool.tickets[0].price)}</p>
-            </div>
-            {pool.tickets[1] && (
-              <div className={styles.numChild}>
-                {`x${searchParam.get("nc")}  ${pool.tickets[1].ticket_name} `}
-                <p>{VND.format(pool.tickets[1].price)}</p>
+      <div className={styles.wrapper}>
+        <div className={styles.mainHeader}>
+          <Link href="/" color="#22BFEA">
+            Trang chủ
+          </Link>
+          <span>{`  >  `}</span>
+          <Link href="" className={styles.mainHref}>
+            {" "}
+            Thanh toán
+          </Link>
+        </div>
+        <div className={styles.main}>
+          {pool && (
+            <div className={styles.trai}>
+              <div className={styles.tenPool}>
+                <strong style={{ fontSize: 20 }}>{pool?.name}</strong>
               </div>
-            )}
-            <div className={styles.date}>
-              <p>Thời gian:</p>
-              {searchParam.get("date")}
-            </div>
+              <div className={styles.location}>{pool?.location}</div>
+              <div className={styles.numAdult}>
+                {`x${searchParam.get("na")}  ${pool.tickets[0].ticket_name}`}
+                <p>{VND.format(pool.tickets[0].price)}</p>
+              </div>
+              {pool.tickets[1] && searchParam.get("nc") != '0' && (
+                <div className={styles.numChild}>
+                  {`x${searchParam.get("nc")}  ${pool.tickets[1].ticket_name} `}
+                  <p>{VND.format(pool.tickets[1].price)}</p>
+                </div>
+              )}
+              <div className={styles.date}>
+                <p>Thời gian:</p>
+                {searchParam.get("date")}
+              </div>
 
-            <div
-              className={styles.total}
-              style={{ flex: "auto", alignItems: "center" }}
-            >
-              <strong style={{ fontSize: 20 }}>Tổng tiền:</strong>
-              {VND.format(
-                (pool.tickets[0] &&
-                  pool.tickets[0].price * Number(searchParam.get("na"))) +
+              <div
+                className={styles.total}
+                style={{ flex: "auto", alignItems: "center" }}
+              >
+                <strong style={{ fontSize: 20 }}>Tổng tiền:</strong>
+                {VND.format(
+                  (pool.tickets[0] &&
+                    pool.tickets[0].price * Number(searchParam.get("na"))) +
                   (pool.tickets[1]
                     ? pool.tickets[1].price * Number(searchParam.get("nc"))
                     : 0)
-              )}
+                )}
+              </div>
+            </div>
+          )}
+          <div className={styles.phai}>
+            <div className={styles.tenPool}>
+              <strong style={{ fontSize: 20 }}>Điền thông tin chi tiết</strong>
+            </div>
+            <div className={styles.ten}>
+              <label htmlFor="ten">Họ và tên: </label>
+              <input
+                type="text"
+                id="ten"
+                value={name}
+                placeholder="Vui lòng nhập tên"
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+            <div className={styles.sdt}>
+              <label htmlFor="sdt">Số điện thoại: </label>
+              <input
+                type="text"
+                placeholder="Vui lòng nhập số điện thoại"
+                id="sdt"
+                value={sdt}
+                onChange={(e) => setSdt(e.target.value)}
+              />
+            </div>
+            <div className={styles.dchi}>
+              <label htmlFor="dchi">Email: </label>
+              <input
+                type="text"
+                id="dchi"
+                placeholder="Vui lòng nhập địa chỉ email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
           </div>
-        )}
-        <div className={styles.phai}>
-          <div className={styles.tenPool}>
-            <strong style={{ fontSize: 20 }}>Điền thông tin chi tiết</strong>
-          </div>
-          <div className={styles.ten}>
-            <label htmlFor="ten">Họ và tên: </label>
-            <input
-              type="text"
-              id="ten"
-              value={name}
-              placeholder="Vui lòng nhập tên"
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-          <div className={styles.sdt}>
-            <label htmlFor="sdt">Số điện thoại: </label>
-            <input
-              type="text"
-              placeholder="Vui lòng nhập số điện thoại"
-              id="sdt"
-              value={sdt}
-              onChange={(e) => setSdt(e.target.value)}
-            />
-          </div>
-          <div className={styles.dchi}>
-            <label htmlFor="dchi">Email: </label>
-            <input
-              type="text"
-              id="dchi"
-              placeholder="Vui lòng nhập địa chỉ email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
         </div>
-      </div>
-      <div
-        className={styles.xacNhan}
-        style={{ display: "flex", justifyContent: "center" }}
-      >
-        <Button
-          btnStyle={ButtonStyle.primary}
-          content={"Thanh toán"}
-          func={handleSubmit}
-        />
-      </div>
-    </div></>
+        <div
+          className={styles.xacNhan}
+          style={{ display: "flex", justifyContent: "center" }}
+        >
+          <Button
+            btnStyle={ButtonStyle.primary}
+            content={"Thanh toán"}
+            func={handleSubmit}
+          />
+        </div>
+      </div></>
   )
 }
