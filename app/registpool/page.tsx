@@ -331,7 +331,7 @@ export default function RegistPool() {
               var desIdk: string = e.type == "ADULT" ? 'Bể bơi có độ sâu từ 1m5 đến 2m thích hợp cho người lớn.' : 'Bể bơi có độ sâu từ 40cm đến 1m2 thích hợp cho trẻ em.'
               var imgIdk: string = e.type == "ADULT" ? 'ae205a25-ec7c-4f15-9b84-e22b7c5d505d' : '81667a99-ff3c-484a-8bed-ebcd0e42a088'
               const fd1 = new FormData()
-              Array.from(e.file).forEach(el => {
+              Array.from(e.file).forEach((el: any) => {
                 fd1.append("image[]", el)
               })
               axios
@@ -653,7 +653,7 @@ function Pool({ ticket, func, i }: { ticket: poolType, func: Function, i: any })
   return (
     <>
       <div className={styles.ticket} onClick={e => func()} >
-        {ticket.file && Array.from(ticket.file).map((e, i) => {
+        {ticket.file && Array.from(ticket.file).map((e: any, i) => {
           return <img src={URL.createObjectURL(e)} height={50} />
         })}
         <div className={styles.mainDes}>

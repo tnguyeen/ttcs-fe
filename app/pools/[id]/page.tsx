@@ -475,6 +475,7 @@ export default function Pool({ params }: { params: { id: string } }) {
                   name={e.name}
                   location={e.location}
                   expand={false}
+                  id={e.id}
                 />
               )
             })}
